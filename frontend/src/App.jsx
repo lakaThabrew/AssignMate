@@ -10,33 +10,39 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import { RoleProvider, useRole } from './context/RoleContext';
 
 function AppContent() {
   const { isLoggedIn } = useRole();
 
-  if (!isLoggedIn) {
-    return (
-      <div className="app">
-        <main className="container" style={{ marginTop: '2rem' }}>
-          <Login />
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="app">
-      <Navbar />
+      {isLoggedIn && <Navbar />}
       <main className="container" style={{ marginTop: '2rem', flex: 1 }}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/rubrics" element={<RubricBuilder />} />
-          <Route path="/results/:id" element={<Results />} />
-          <Route path="/results" element={<History />} />
+          {/* Public Routes */}
+          <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/" />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+
+          {/* User Protected Routes (Common) */}
+          <Route element={<ProtectedRoute />}>
+             <Route path="/" element={<Dashboard />} />
+             <Route path="/results/:id" element={<Results />} />
+             <Route path="/results" element={<History />} />
+          </Route>
+
+          {/* Student-Only Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+             <Route path="/upload" element={<Upload />} />
+          </Route>
+
+          {/* Lecturer-Only Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['lecturer']} />}>
+             <Route path="/rubrics" element={<RubricBuilder />} />
+          </Route>
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -56,4 +62,4 @@ function App() {
 }
 
 export default App;
-export { useRole }; // Re-export for convenience to minimize page updates
+export { useRole };

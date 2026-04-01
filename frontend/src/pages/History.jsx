@@ -1,24 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Search, Filter, BookOpen } from 'lucide-react';
+import useEvaluations from '../hooks/useEvaluations';
 import EvaluationCard from '../components/EvaluationCard';
 
 export default function History() {
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { history, loading } = useEvaluations();
   const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/history')
-      .then(res => {
-        setHistory(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching history", err);
-        setLoading(false);
-      });
-  }, []);
 
   const filtered = history.filter(item => 
     item.assignmentName.toLowerCase().includes(search.toLowerCase())

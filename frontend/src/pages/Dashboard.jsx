@@ -1,27 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { TrendingUp, Users, AlertCircle, BookOpen, Clock } from 'lucide-react';
-import axios from 'axios';
 import { useRole } from '../context/RoleContext';
+import useEvaluations from '../hooks/useEvaluations';
 import Hero from '../components/Hero';
 import StatsCard from '../components/StatsCard';
 import EvaluationCard from '../components/EvaluationCard';
 
 export default function Dashboard() {
   const { role, userInfo } = useRole();
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/history')
-      .then(res => {
-        setHistory(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching history", err);
-        setLoading(false);
-      });
-  }, []);
+  const { history, loading } = useEvaluations();
 
   const averageScore = history.length > 0 ? (history.reduce((acc, curr) => acc + curr.scorePredicted, 0) / history.length).toFixed(1) : 0;
 
