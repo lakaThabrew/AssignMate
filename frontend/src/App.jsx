@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import ParticleBackground from './components/ParticleBackground';
 import { RoleProvider, useRole } from './context/RoleContext';
 
 function AppContent() {
@@ -18,8 +19,9 @@ function AppContent() {
 
   return (
     <div className="app">
+      <ParticleBackground />
       {isLoggedIn && <Navbar />}
-      <main className="container" style={{ marginTop: '1rem', flex: 1 }}>
+      <main className="container" style={{ marginTop: '1rem', flex: 1, position: 'relative', zIndex: 1 }}>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/" />} />
