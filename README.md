@@ -33,8 +33,8 @@ Grading academic assignments is a time-consuming, manual process for educators. 
 | UI/UX Designer / Frontend Dev | Member 3 |
 | Backend Architect / DB Engineer | Member 4 |
 
-- **Team Name**: [Insert Team Name]
-- **University**: [Insert University]
+- **Team Name**: EchoBinary 
+- **University**: University of Moratuwa
 - **Domain**: Education Technology (EdTech) & Generative AI
 
 ---
