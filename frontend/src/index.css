@@ -114,8 +114,8 @@ h1, h2, h3, h4, .logo {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
   /* removed translateY hover – it was causing overlap clipping */
   transition: border-color 0.3s, box-shadow 0.3s;
   position: relative; /* keeps z-index context contained */
@@ -184,21 +184,21 @@ h1, h2, h3, h4, .logo {
 .hero-section {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 5rem 2rem;
-  margin-bottom: 3rem;
+  padding: 3rem 2rem;
+  margin-bottom: 1.5rem;
   border-radius: 24px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  isolation: isolate; /* creates new stacking context */
+  isolation: isolate;
 }
 
 /* ── Grids ──────────────────────────────────────────── */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  align-items: start; /* prevents stretching that causes overlap */
+  gap: 1.25rem;
+  align-items: start;
 }
 
 /* ── File drop ──────────────────────────────────────── */
@@ -276,9 +276,9 @@ h1, h2, h3, h4, .logo {
 /* ── Rubric item ────────────────────────────────────── */
 .rubric-item {
   border-left: 4px solid var(--color-primary);
-  padding: 1.2rem 1.8rem;
+  padding: 1rem 1.5rem;
   background: rgba(255, 255, 255, 0.03);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   border-radius: 0 12px 12px 0;
 }
 

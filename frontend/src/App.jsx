@@ -19,7 +19,7 @@ function AppContent() {
   return (
     <div className="app">
       {isLoggedIn && <Navbar />}
-      <main className="container" style={{ marginTop: '2rem', flex: 1 }}>
+      <main className="container" style={{ marginTop: '1rem', flex: 1 }}>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/" />} />

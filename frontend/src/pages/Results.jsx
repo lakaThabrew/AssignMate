@@ -47,7 +47,7 @@ export default function Results() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <div>
           <Link to="/" style={{ color: '#aaa', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
             <ArrowLeft size={16} /> Back to Dashboard
@@ -106,7 +106,7 @@ export default function Results() {
 
       {/* Criteria Bar Chart */}
       {rubricBreakdown.length > 0 && (
-        <div className="card" style={{ marginBottom: '2rem' }}>
+        <div className="card" style={{ marginBottom: '1.25rem' }}>
           <CriteriaChart rubricBreakdown={rubricBreakdown} />
         </div>
       )}
