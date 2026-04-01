@@ -3,6 +3,7 @@ const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const fs = require("fs");
 const { evaluateAssignmentWithRubric } = require("../utils/gemini");
+const Evaluation = require("../models/Evaluation"); // ADDED
 const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
@@ -25,20 +26,26 @@ router.post("/", upload.single("assignment"), async (req, res) => {
       const data = await pdfParse(dataBuffer);
       assignmentText = data.text;
     } else {
-      // Very naive fallback for generic text or docx (ideally you'd use mammoth layout for docx)
       assignmentText = dataBuffer.toString('utf-8');
     }
 
     // Evaluate
     console.log("Evaluating document...", file.originalname);
-    const evaluation = await evaluateAssignmentWithRubric(assignmentText, rubricText);
+    const evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText);
     
+    // Save to database
+    const newDoc = new Evaluation({
+      assignmentName: file.originalname,
+      ...evaluationData
+    });
+    const savedEvaluation = await newDoc.save();
+
     // Clean up file
     try {
       fs.unlinkSync(file.path);
     } catch(e) {}
 
-    res.json(evaluation);
+    res.json(savedEvaluation);
   } catch (error) {
     console.error("Evaluation Route Error:", error);
     try {
