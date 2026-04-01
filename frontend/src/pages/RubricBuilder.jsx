@@ -1,28 +1,60 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Save, FileText, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Save, FileText, Sparkles, CheckCircle } from 'lucide-react';
+import { evaluationService } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function RubricBuilder() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [criteria, setCriteria] = useState([
-    { id: 1, name: 'Introduction', weight: 20, description: '' },
-    { id: 2, name: 'Analysis', weight: 40, description: '' },
-    { id: 3, name: 'Conclusion', weight: 20, description: '' },
-    { id: 4, name: 'Formatting', weight: 20, description: '' },
+    { name: 'Introduction', weight: 20, description: '' },
+    { name: 'Analysis', weight: 40, description: '' },
+    { name: 'Conclusion', weight: 20, description: '' },
+    { name: 'Formatting', weight: 20, description: '' },
   ]);
 
   const addCriterion = () => {
-    setCriteria([...criteria, { id: Date.now(), name: '', weight: 0, description: '' }]);
+    setCriteria([...criteria, { name: '', weight: 0, description: '' }]);
   };
 
-  const removeCriterion = (id) => {
-    setCriteria(criteria.filter(c => c.id !== id));
+  const removeCriterion = (index) => {
+    setCriteria(criteria.filter((_, i) => i !== index));
   };
 
-  const updateCriterion = (id, field, value) => {
-    setCriteria(criteria.map(c => c.id === id ? { ...c, [field]: value } : c));
+  const updateCriterion = (index, field, value) => {
+    setCriteria(criteria.map((c, i) => i === index ? { ...c, [field]: value } : c));
   };
 
   const totalWeight = criteria.reduce((sum, c) => sum + Number(c.weight), 0);
+
+  const handleSave = async () => {
+    if (!title || totalWeight !== 100) return alert('Please provide a title and ensure total weight is 100%');
+    
+    setLoading(true);
+    try {
+      await evaluationService.createRubric({ title, description, criteria });
+      setSuccess(true);
+      setTimeout(() => navigate('/results'), 2000);
+    } catch (err) {
+      console.error('Error saving rubric', err);
+      alert('Failed to save rubric');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="card" style={{ textAlign: 'center', padding: '5rem', marginTop: '5rem' }}>
+        <CheckCircle size={80} color="#2ecc71" style={{ margin: '0 auto 2rem auto' }} />
+        <h1>Rubric Saved Successfully!</h1>
+        <p style={{ color: '#aaa' }}>Redirecting to portals...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -44,25 +76,35 @@ export default function RubricBuilder() {
               />
             </div>
 
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: '600' }}>Overall Description</label>
+              <textarea 
+                placeholder="e.g. Detailed grading guide for final assignment" 
+                rows="3"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
             <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <FileText size={20} /> Criteria Breakdown
             </h3>
 
-            {criteria.map((c) => (
-              <div key={c.id} style={{ display: 'flex', gap: '15px', marginBottom: '1rem', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px' }}>
+            {criteria.map((c, index) => (
+              <div key={index} style={{ display: 'flex', gap: '15px', marginBottom: '1rem', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px' }}>
                 <div style={{ flex: 2 }}>
                   <input 
                     type="text" 
                     placeholder="Criterion Name" 
                     value={c.name}
-                    onChange={(e) => updateCriterion(c.id, 'name', e.target.value)}
+                    onChange={(e) => updateCriterion(index, 'name', e.target.value)}
                     style={{ marginBottom: '5px' }}
                   />
                   <textarea 
                     placeholder="Description / Guidance"
                     rows="2"
                     value={c.description}
-                    onChange={(e) => updateCriterion(c.id, 'description', e.target.value)}
+                    onChange={(e) => updateCriterion(index, 'description', e.target.value)}
                     style={{ fontSize: '0.9rem' }}
                   />
                 </div>
@@ -71,11 +113,11 @@ export default function RubricBuilder() {
                   <input 
                     type="number" 
                     value={c.weight}
-                    onChange={(e) => updateCriterion(c.id, 'weight', e.target.value)}
+                    onChange={(e) => updateCriterion(index, 'weight', e.target.value)}
                   />
                 </div>
                 <button 
-                  onClick={() => removeCriterion(c.id)}
+                  onClick={() => removeCriterion(index)}
                   style={{ background: 'transparent', border: 'none', color: '#e74c3c', cursor: 'pointer', marginTop: '30px' }}
                 >
                   <Trash2 size={20} />
@@ -102,8 +144,13 @@ export default function RubricBuilder() {
               </p>
             )}
             
-            <button className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }}>
-              <Save size={20} /> Save Rubric
+            <button 
+              className="btn btn-primary" 
+              style={{ width: '100%', marginBottom: '1rem' }}
+              onClick={handleSave}
+              disabled={loading}
+            >
+              <Save size={20} /> {loading ? 'Saving...' : 'Save Rubric'}
             </button>
             <button className="btn btn-outline" style={{ width: '100%' }}>
               <Sparkles size={20} /> Generate with AI

@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, FileText, CheckCircle, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import { UploadCloud, FileText, CheckCircle, AlertCircle, Settings } from 'lucide-react';
+import { evaluationService } from '../services/api';
 
 export default function Upload() {
   const [assignment, setAssignment] = useState(null);
+  const [rubrics, setRubrics] = useState([]);
+  const [selectedRubricId, setSelectedRubricId] = useState('');
   const [rubricText, setRubricText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    evaluationService.getRubrics().then(res => {
+      setRubrics(res.data);
+    }).catch(err => console.error("Error loading rubrics", err));
+  }, []);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -29,8 +37,16 @@ export default function Upload() {
       setError('Please upload an assignment file.');
       return;
     }
-    if (!rubricText.trim()) {
-      setError('Please provide rubric text or criteria.');
+    
+    // Use selected rubric text or manual text
+    let finalRubric = rubricText;
+    if (selectedRubricId) {
+      const rubric = rubrics.find(r => r._id === selectedRubricId);
+      finalRubric = JSON.stringify(rubric.criteria);
+    }
+
+    if (!finalRubric.trim()) {
+      setError('Please provide rubric text or select a rubric.');
       return;
     }
 
@@ -40,19 +56,13 @@ export default function Upload() {
     try {
       const formData = new FormData();
       formData.append('assignment', assignment);
-      formData.append('rubricText', rubricText);
+      formData.append('rubricText', finalRubric);
 
-      const response = await axios.post('http://localhost:5000/api/evaluate', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      // Navigate to results with the dynamic ID
+      const response = await evaluationService.evaluate(formData);
       navigate(`/results/${response.data._id}`, { state: { evaluation: response.data } });
     } catch (err) {
       console.error(err);
-      setError('Error analyzing assignment. Please try again or check backend connection.');
+      setError('Error analyzing assignment. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -62,7 +72,7 @@ export default function Upload() {
     <div>
       <div className="header-light">
         <h1 style={{ color: 'var(--color-dark)' }}>Start New <span className="header-accent">Evaluation</span></h1>
-        <p style={{ marginTop: '10px', color: '#666' }}>Upload an assignment and provide the grading rubric for AI analysis.</p>
+        <p style={{ marginTop: '10px', color: '#666' }}>Upload an assignment and select a rubric for AI analysis.</p>
       </div>
 
       <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -75,7 +85,7 @@ export default function Upload() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group" style={{ marginBottom: '2rem' }}>
-            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>1. Upload Assignment (PDF)</label>
+            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>1. Upload Assignment (PDF/DOCX)</label>
             <div 
               className="file-drop"
               onDragOver={(e) => e.preventDefault()}
@@ -107,15 +117,39 @@ export default function Upload() {
           </div>
 
           <div className="form-group" style={{ marginBottom: '2rem' }}>
-            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>2. Grading Rubric</label>
-            <textarea 
+            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>2. Select Grading Rubric</label>
+            <select 
               className="form-control" 
-              rows="8" 
-              placeholder="Paste rubric criteria here (e.g., Introduction: 20%, Methodology: 30%, ...)"
-              value={rubricText}
-              onChange={(e) => setRubricText(e.target.value)}
-              style={{ padding: '15px' }}
-            />
+              value={selectedRubricId} 
+              onChange={(e) => setSelectedRubricId(e.target.value)}
+              style={{ padding: '15px', marginBottom: '1rem' }}
+            >
+              <option value="">-- Choose a predefined rubric --</option>
+              {rubrics.map(r => (
+                <option key={r._id} value={r._id}>{r.title}</option>
+              ))}
+              <option value="manual">Enter custom rubric text</option>
+            </select>
+
+            {(selectedRubricId === 'manual' || rubrics.length === 0) && (
+              <textarea 
+                className="form-control" 
+                rows="6" 
+                placeholder="Paste rubric criteria here (e.g., Introduction: 20%, Methodology: 30%, ...)"
+                value={rubricText}
+                onChange={(e) => setRubricText(e.target.value)}
+                style={{ padding: '15px' }}
+              />
+            )}
+            
+            {selectedRubricId && selectedRubricId !== 'manual' && (
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                  <Settings size={14} style={{ verticalAlign: 'middle', marginRight: '5px' }} />
+                  Selected rubric criteria will be used for automated scoring.
+                </p>
+              </div>
+            )}
           </div>
 
           <button 

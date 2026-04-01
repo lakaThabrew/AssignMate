@@ -12,6 +12,9 @@ export const evaluationService = {
   evaluate: (formData) => api.post('/evaluate', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  getRubrics: () => api.get('/rubrics'),
+  createRubric: (data) => api.post('/rubrics', data),
+  deleteRubric: (id) => api.delete(`/rubrics/${id}`),
 };
 
 export default api;
