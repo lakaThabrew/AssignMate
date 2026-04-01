@@ -1,0 +1,229 @@
+ 
+ 
+CryptX 2.0 – University Category 
+Field Announcement Document 
+ 
+Contents 
+1. Document Purpose ................................ ................................ ................................ ............. 2 
+2. Introduction ................................ ................................ ................................ ......................... 2 
+3. Industry Domains (Industry Selection by Participants) ................................ ........................ 2 
+4. Industry Selection Rules ................................ ................................ ................................ ..... 3 
+5. Objective of Industry Selection ................................ ................................ ........................... 3 
+6. Post-Selection Guidelines ................................ ................................ ................................ ... 3 
+7. Innovation and Solution Requirements ................................ ................................ ............... 4 
+8. Technology and Development Flexibility ................................ ................................ ............. 4 
+9. Development Policy ................................ ................................ ................................ ............ 4 
+10. GitHub Repository Requirement ................................ ................................ ....................... 5 
+11. Technical Approach ................................ ................................ ................................ .......... 5 
+12. Final Hackathon Day ................................ ................................ ................................ ........ 5 
+13. Final Presentation & Evaluation ................................ ................................ ........................ 6 
+14. Evaluation Criteria ................................ ................................ ................................ ............ 6 
+15. Rules and Compliance ................................ ................................ ................................ ...... 8 
+ 
+ 
+ 
+ 
+  
+1. Document Purpose 
+This document is issued to formally announce the available industry domains for CryptX 2.0 and 
+to guide undergraduate teams in selecting, analyzing, and developing innovative solutions within 
+a chosen domain. 
+ 
+2. Introduction 
+CryptX 2.0 is designed to challenge undergraduate students to develop innovative, scalable, and 
+impactful solutions for real-world problems. 
+To support this objective, a set of industry domains has been introduced. These domains allow 
+teams to align their ideas with current technological advancements, industry needs, and societal 
+challenges at both local and global levels. 
+ 
+3. Industry Domains (Industry Selection by Participants) 
+Participants are required to select one industry domain from the following: 
+ 
+1. Agriculture (AgriTech): Build solutions for smart farming, crop disease detection, 
+irrigation, yield prediction, and direct farmer-to-buyer marketplaces. 
+2. Tourism, Culture & Inclusive Experiences : Create apps for personalized travel 
+planning, AR/VR tours, local experience discovery, and sustainable tourism tools. 
+3. E-Commerce & Marketplace Solutions : Platforms for personalized shopping, 
+virtual try -on, smart recommendations, buyer -seller matching, trust verification,  
+dynamic pricing, niche marketplaces, and seamless inventory/checkout 
+experiences. 
+4. Cybersecurity: Build threat detection systems, phishing tools, vulnerability 
+scanners, secure authentication, and data protection solutions. 
+5. Disaster Management & Community Resilience :  Create early warning 
+systems, real-time alerts, damage assessment tools, offline communication, and 
+rescue coordination apps.  
+6. Education Technology (EdTech) & Generative AI :  Develop personalized 
+learning apps, AI tutors, gamified education platforms, and tools for teachers and 
+students. 
+7. Entertainment: Build AI content generators, interactive games, AR/VR 
+experiences, mood-based recommenders, and social entertainment platforms. 
+8. Responsible AI, Ethics & Future of Work : Bias detection and fairness auditing, 
+explainable AI, privacy-preserving technologies, human-AI collaboration, reskilling 
+tools, accessibility solutions, and inclusive digital workspaces. 
+These domains represent key sectors with significant relevance to Sri Lanka and global 
+trends. 
+ 
+4. Industry Selection Rules 
+● Each team must choose only one domain 
+● The selected domain must remain unchanged throughout the competition 
+● All proposed solutions must strictly align with the selected domain 
+● Problem statements must clearly relate to the chosen industry 
+ 
+5. Objective of Industry Selection 
+The purpose of industry selection is to: 
+● Encourage domain-specific innovation 
+● Allow teams to work within their areas of interest or expertise 
+● Promote diverse solutions across multiple sectors 
+● Ensure solutions are relevant to real-world applications 
+ 
+6. Post-Selection Guidelines 
+After selecting an industry domain, teams are expected to: 
+● Identify a specific and meaningful problem within the domain 
+● Conduct research and analyze existing solutions  
+● Define a clear and concise problem statement 
+● Design an appropriate and feasible solution 
+● Plan the system architecture and technology stack 
+ 
+7. Innovation and Solution Requirements 
+Teams must ensure that their proposed solution meets the following requirements: 
+● The solution must not be a commonly available or widely implemented system within the 
+selected industry 
+● The solution must address a real gap, limitation, or inefficiency in existing systems 
+● The solution must be relevant to current real-world challenges in the chosen domain 
+● The solution may be: 
+○ A completely new system, or 
+○ An improved version of an existing system with a clearly defined unique feature 
+A basic system combined with a meaningful and innovative feature is acceptable, provided it 
+demonstrates clear value and originality. 
+Reusing previous project ideas is allowed only if the solution is significantly improved and aligned 
+with the selected domain. 
+ 
+8. Technology and Development Flexibility 
+● AI may be used as an enhancement or supporting component if relevant 
+● Teams are free to use external APIs where appropriate 
+● Use of open-source code is allowed; however, teams must ensure proper understanding, 
+modification, and originality in their implementation 
+ 
+9. Development Policy 
+● Coding and implementation are allowed  
+● Teams may begin development immediately after selecting their domain 
+● All development progress must be properly tracked and maintained  
+10. GitHub Repository Requirement 
+All teams must maintain their project code on GitHub to ensure transparency, proper version 
+control, and easy evaluation by the organizing committee. 
+Requirements: 
+● Teams must create one public repository per team under any team member’s personal 
+GitHub account. 
+● The repository must be set to Public throughout the competition. 
+● Teams must commit code regularly and maintain a clear, meaningful commit history. 
+● Follow proper version control practices (clear commit messages, logical branching if 
+used, etc.). 
+● Maintain a well-structured README.md file that includes: 
+○ Problem statement 
+○ Proposed solution 
+○ Team details (names, university, selected domain) 
+○ Technology stack and architecture overview (recommended) 
+○ Instructions on how to run the project 
+11. Technical Approach 
+Teams may adopt suitable technical approaches such as the following: 
+● Secure and privacy-focused systems 
+● Artificial Intelligence and data analytics 
+● Cloud-based and scalable architectures 
+● Digital platforms and service-based systems 
+● Automation and intelligent workflows 
+Combining multiple technologies is encouraged where appropriate. 
+12. Final Hackathon Day 
+During the final hackathon event: 
+● Teams will complete and finalize their solution 
+● Internet access will be allowed 
+● Teams are expected to demonstrate a working system 
+Evaluation will include: 
+● System demonstration 
+● Presentation or pitch  
+● Viva (question and answer session with judges) 
+13. Final Presentation & Evaluation 
+● Each team will deliver a presentation on the official event day: 
+Presentation Format: 
+● 15 minutes total 
+○ 10 minutes for Presentation + Demo 
+○ 5  minutes for Technical Viva 
+○ A live countdown timer will be displayed during the presentation. 
+● Teams must strictly conclude the demo within the allocated 10 minutes. 
+● It is not compulsory for all team members to take part in the presentation. 
+● Deployment is optional and will not earn additional marks,  teams deploying 
+must use their own valid cloud architecture plan for presentation (free-tier or 
+trial plans are acceptable). 
+● Your cloud architecture plan must be included as part of your presentation. 
+● Failure to present = disqualification. 
+● Judges' decisions are final and non-negotiable. 
+● Any attempt to influence judges will result in disqualification. 
+ 
+14. Evaluation Criteria 
+The projects will be evaluated based on the following criteria: 
+ 
+• 60% Technical Core — Problem Identification, Innovation, Technical Implementation & 
+System Design 
+• 30% Advanced Concepts  — Cloud Usage, Code Quality & Security, Entrepreneurial 
+Value 
+• 10% Communication — Presentation Quality & Clarity, Technical Viva (Q&A) 
+  
+ 
+ 
+ 
+ 
+Criteria Description Marks 
+Problem Identification & 
+Relevance 
+How well the team identifies a real -
+world, meaningful, and industry -
+relevant problem 
+20 
+Innovation & Uniqueness Creativity and originality of the 
+proposed solution 
+20 
+Technical Implementation 
+& System Design 
+Quality of architecture, design 
+decisions, and overall technical 
+approach 
+10 
+Cloud Usage  Effective use of cloud services (e.g., 
+AWS) with a clear plan 
+10 
+ 
+Code Quality & Security 
+Clean, maintainable code and proper 
+use of secure coding practices 
+10 
+Entrepreneurial Value 
+ 
+Business viability, monetization 
+strategy, and market potential 
+ 
+10 
+Presentation Quality & 
+Clarity 
+ 
+Clear explanation of the idea, system 
+flow, and effective demo delivery 
+10 
+Technical Viva (Q&A) Ability to confidently answer technical 
+and design-related questions 
+ 
+10 
+ 
+ 
+ 
+ 
+Total  100  
+15. Rules and Compliance 
+ 
+● Teams must strictly follow their selected industry domain. 
+●  All work must be original. 
+● Solutions must be original and created by the team. Plagiarism or pre-built solutions will 
+lead to disqualification. 
+● Teams must adhere to ethical and legal standards. 
+● Organizers reserve the right to verify submissions. 
+● All decisions made by the judging panel are final and cannot be challenged 
+ 
+ 
