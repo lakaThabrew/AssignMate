@@ -1,136 +1,204 @@
 import React, { useState } from 'react';
-import { useRole } from '../App';
-import { BookOpen, User, GraduationCap, ArrowRight, ShieldCheck, Mail, Lock, UserPlus } from 'lucide-react';
+import { useRole } from '../context/RoleContext';
+import { BookOpen, GraduationCap, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const { setRole, setIsLoggedIn, setUserInfo } = useRole();
-  const [isSignup, setIsSignup] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLogin = (role) => {
-    // For demo/hackathon purposes, we use the name from input or a default
-    const finalName = name || (role === 'student' ? 'Student User' : 'Lecturer User');
+  const [tab, setTab]           = useState('signin');      // 'signin' | 'signup'
+  const [role, setLocalRole]    = useState('student');
+  const [name, setName]         = useState('');
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError]       = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (tab === 'signup' && !name.trim()) {
+      return setError('Please enter your full name.');
+    }
+    if (!email.trim()) return setError('Please enter your email.');
+    if (password.length < 4) return setError('Password must be at least 4 characters.');
+
+    const finalName = tab === 'signup' ? name : (email.split('@')[0] || 'User');
     setUserInfo({ name: finalName, email });
     setRole(role);
     setIsLoggedIn(true);
   };
 
+  const inputStyle = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    color: '#fff',
+    borderRadius: '12px',
+    padding: '0.85rem 1rem',
+    width: '100%',
+    outline: 'none',
+    fontSize: '0.95rem',
+    marginBottom: 0,
+    transition: 'border-color 0.2s',
+  };
+
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="card" style={{ maxWidth: '500px', width: '100%', padding: '3rem', textAlign: 'center' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ background: 'rgba(207, 109, 252, 0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
-            <BookOpen size={40} color="var(--color-secondary)" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem',
+    }}>
+      <div style={{ width: '100%', maxWidth: '440px' }}>
+
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{
+            width: '64px', height: '64px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 1rem',
+          }}>
+            <BookOpen size={30} color="#fff" />
           </div>
-          <h1 style={{ fontSize: '2.4rem', marginBottom: '0.5rem' }}>AssignMate <span className="header-accent">Pro</span></h1>
-          <p style={{ color: '#aaa' }}>{isSignup ? 'Create your professional account' : 'Welcome back! Select your role'}</p>
+          <h1 style={{ fontSize: '2rem', marginBottom: '4px' }}>
+            AssignMate <span className="header-accent">Pro</span>
+          </h1>
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>
+            AI-powered academic evaluation platform
+          </p>
         </div>
 
-        {isSignup ? (
-          <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '5px', display: 'block' }}>Full Name</label>
-              <div style={{ position: 'relative' }}>
-                <User size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
-                <input type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} style={{ paddingLeft: '45px' }} />
-              </div>
-            </div>
-            <div>
-              <label style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '5px', display: 'block' }}>Email Address</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
-                <input type="email" placeholder="john@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} style={{ paddingLeft: '45px' }} />
-              </div>
-            </div>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '5px', display: 'block' }}>Password</label>
-              <div style={{ position: 'relative' }}>
-                <Lock size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
-                <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={{ paddingLeft: '45px' }} />
-              </div>
-            </div>
-            
-            <p style={{ fontSize: '0.9rem', color: '#aaa', textAlign: 'center', marginBottom: '1rem' }}>Choose your default portal:</p>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button 
-                onClick={() => handleLogin('student')}
-                className="btn btn-primary" 
-                style={{ flex: 1, gap: '5px' }}
-              >
-                <GraduationCap size={20} /> Student
-              </button>
-              <button 
-                onClick={() => handleLogin('lecturer')}
-                className="btn btn-secondary" 
-                style={{ flex: 1, gap: '5px' }}
-              >
-                <ShieldCheck size={20} /> Lecturer
-              </button>
-            </div>
-            <button onClick={() => setIsSignup(false)} style={{ background: 'transparent', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', textAlign: 'center', marginTop: '1rem' }}>
-              Already have an account? Sign In
-            </button>
-          </div>
-        ) : (
-          <>
-            <div style={{ display: 'grid', gap: '15px', marginBottom: '2rem' }}>
-              <button 
-                onClick={() => handleLogin('student')}
-                className="card" 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '20px', 
-                  padding: '1.5rem', 
-                  marginBottom: 0, 
-                  cursor: 'pointer',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.03)',
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{ background: 'var(--color-primary)', padding: '10px', borderRadius: '12px', color: 'var(--color-dark)' }}>
-                  <GraduationCap size={24} />
-                </div>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>Student Portal</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#888', margin: 0 }}>View your progress & feedback</p>
-                </div>
-                <ArrowRight size={18} color="#555" />
-              </button>
+        {/* Card */}
+        <div className="card" style={{ marginBottom: 0 }}>
 
-              <button 
-                onClick={() => handleLogin('lecturer')}
-                className="card" 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '20px', 
-                  padding: '1.5rem', 
-                  marginBottom: 0, 
-                  cursor: 'pointer',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.03)',
-                  transition: 'all 0.3s'
+          {/* Sign In / Sign Up tabs */}
+          <div style={{
+            display: 'flex', background: 'rgba(255,255,255,0.04)',
+            borderRadius: '10px', padding: '4px', marginBottom: '1.5rem',
+          }}>
+            {['signin', 'signup'].map(t => (
+              <button
+                key={t}
+                onClick={() => { setTab(t); setError(''); }}
+                style={{
+                  flex: 1, padding: '0.55rem', border: 'none', cursor: 'pointer',
+                  borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem',
+                  transition: 'all 0.2s',
+                  background: tab === t
+                    ? 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))'
+                    : 'transparent',
+                  color: tab === t ? '#fff' : '#888',
                 }}
               >
-                <div style={{ background: 'var(--color-secondary)', padding: '10px', borderRadius: '12px', color: 'var(--color-dark)' }}>
-                  <ShieldCheck size={24} />
-                </div>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>Lecturer Portal</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#888', margin: 0 }}>Create rubrics & manage class</p>
-                </div>
-                <ArrowRight size={18} color="#555" />
+                {t === 'signin' ? 'Sign In' : 'Create Account'}
               </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            {/* Name — signup only */}
+            {tab === 'signup' && (
+              <div>
+                <label style={{ fontSize: '0.82rem', color: '#aaa', marginBottom: '6px', display: 'block' }}>Full Name</label>
+                <input
+                  style={inputStyle}
+                  type="text"
+                  placeholder="e.g. Samantha Perera"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* Email */}
+            <div>
+              <label style={{ fontSize: '0.82rem', color: '#aaa', marginBottom: '6px', display: 'block' }}>Email Address</label>
+              <input
+                style={inputStyle}
+                type="email"
+                placeholder="you@university.edu"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
             </div>
-            <button onClick={() => setIsSignup(true)} className="btn btn-outline" style={{ width: '100%', gap: '10px' }}>
-              <UserPlus size={20} /> Create New Account
+
+            {/* Password */}
+            <div>
+              <label style={{ fontSize: '0.82rem', color: '#aaa', marginBottom: '6px', display: 'block' }}>Password</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  style={{ ...inputStyle, paddingRight: '3rem' }}
+                  type={showPass ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(p => !p)}
+                  style={{
+                    position: 'absolute', right: '12px', top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#666',
+                  }}
+                >
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Role selector */}
+            <div>
+              <label style={{ fontSize: '0.82rem', color: '#aaa', marginBottom: '8px', display: 'block' }}>Select Role</label>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {[
+                  { key: 'student',  label: 'Student',  Icon: GraduationCap, color: 'var(--color-primary)' },
+                  { key: 'lecturer', label: 'Lecturer', Icon: ShieldCheck,   color: 'var(--color-secondary)' },
+                ].map(({ key, label, Icon, color }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setLocalRole(key)}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: '8px', padding: '0.7rem', borderRadius: '10px', cursor: 'pointer',
+                      border: `2px solid ${role === key ? color : 'rgba(255,255,255,0.1)'}`,
+                      background: role === key ? `${color}18` : 'transparent',
+                      color: role === key ? color : '#666',
+                      fontWeight: role === key ? '700' : '400',
+                      transition: 'all 0.2s', fontSize: '0.9rem',
+                    }}
+                  >
+                    <Icon size={18} /> {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <p style={{ color: '#e74c3c', fontSize: '0.85rem', background: 'rgba(231,76,60,0.1)', padding: '0.6rem 0.875rem', borderRadius: '8px' }}>
+                {error}
+              </p>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', marginTop: '0.25rem' }}
+            >
+              {tab === 'signin' ? 'Sign In' : 'Create Account & Continue'}
             </button>
-          </>
-        )}
+          </form>
+        </div>
+
+        <p style={{ textAlign: 'center', color: '#555', fontSize: '0.78rem', marginTop: '1.25rem' }}>
+          AssignMate Pro · EchoBinary · University of Moratuwa
+        </p>
       </div>
     </div>
   );
