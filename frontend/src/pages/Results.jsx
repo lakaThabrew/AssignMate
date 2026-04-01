@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link, useParams } from 'react-router-dom';
-import { CheckCircle, AlertTriangle, Info, ShieldAlert, ArrowLeft, Lightbulb, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Info, ShieldAlert, ArrowLeft, TrendingUp } from 'lucide-react';
+import FeedbackPanel from '../components/FeedbackPanel';
 import { evaluationService } from '../services/api';
 
 export default function Results() {
@@ -115,38 +116,16 @@ export default function Results() {
         </div>
       )}
 
-      {/* Strengths & Missing */}
-      <div className="grid-2">
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#2ecc71' }}>
-            <CheckCircle size={22} /> Strengths
-          </h2>
-          <ul style={{ paddingLeft: '20px', lineHeight: '2' }}>
-            {strengths.map((s, i) => <li key={i} style={{ color: '#ccc' }}>{s}</li>)}
-          </ul>
-        </div>
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#e74c3c' }}>
-            <AlertTriangle size={22} /> Missing / Weak Criteria
-          </h2>
-          {missingCriteria.length > 0 ? (
-            <ul style={{ paddingLeft: '20px', lineHeight: '2' }}>
-              {missingCriteria.map((m, i) => <li key={i} style={{ color: '#ccc' }}>{m}</li>)}
-            </ul>
-          ) : <p style={{ color: '#2ecc71' }}>✓ All criteria addressed!</p>}
-        </div>
-      </div>
+      {/* Tabbed Feedback Panel */}
+      <FeedbackPanel
+        strengths={strengths}
+        weaknesses={weaknesses}
+        missingCriteria={missingCriteria}
+        suggestions={suggestions}
+      />
 
-      {/* Suggestions + Plagiarism */}
-      <div className="grid-2">
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: 'var(--color-secondary)' }}>
-            <Lightbulb size={22} /> Improvement Suggestions
-          </h2>
-          <ol style={{ paddingLeft: '20px', lineHeight: '2' }}>
-            {suggestions.map((s, i) => <li key={i} style={{ color: '#ccc' }}>{s}</li>)}
-          </ol>
-        </div>
+      {/* Plagiarism */}
+      <div>
         <div className="card">
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#f39c12' }}>
             <ShieldAlert size={22} /> Plagiarism / Originality

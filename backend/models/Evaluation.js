@@ -2,8 +2,11 @@ const mongoose = require("mongoose");
 
 const RubricBreakdownSchema = new mongoose.Schema({
   criterion: String,
-  status: String,
-  score: String
+  weight: Number,
+  status: { type: String, enum: ['met', 'partial', 'missing'], default: 'missing' },
+  score: String,
+  coveragePercent: Number,
+  supportingEvidence: String
 }, { _id: false });
 
 const EvaluationSchema = new mongoose.Schema({
