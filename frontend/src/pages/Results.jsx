@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, Link, useParams } from 'react-router-dom';
 import { AlertTriangle, Info, ShieldAlert, ArrowLeft, TrendingUp } from 'lucide-react';
 import FeedbackPanel from '../components/FeedbackPanel';
+import { ScoreGauge, CriteriaChart } from '../components/Charts';
 import { evaluationService } from '../services/api';
 
 export default function Results() {
@@ -40,9 +41,6 @@ export default function Results() {
 
   const { scorePredicted, strengths = [], weaknesses = [], missingCriteria = [], suggestions = [], plagiarismRisk, rubricBreakdown = [] } = evaluation;
 
-  const scoreColor = scorePredicted >= 80 ? '#2ecc71' : scorePredicted >= 60 ? '#f39c12' : '#e74c3c';
-  const scoreLabel = scorePredicted >= 80 ? 'Excellent' : scorePredicted >= 60 ? 'Satisfactory' : 'Needs Work';
-
   const statusColor = { met: '#2ecc71', partial: '#f39c12', missing: '#e74c3c' };
   const plagiarismColor = { Low: '#2ecc71', Medium: '#f39c12', High: '#e74c3c' };
 
@@ -59,19 +57,9 @@ export default function Results() {
           </h1>
           <p style={{ color: '#666', marginTop: '5px' }}>{evaluation.assignmentName}</p>
         </div>
-        {/* Score Circle */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '140px', height: '140px', borderRadius: '50%',
-            border: `6px solid ${scoreColor}`,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: `radial-gradient(circle, ${scoreColor}15, transparent)`,
-            boxShadow: `0 0 30px ${scoreColor}40`
-          }}>
-            <span style={{ fontSize: '2.8rem', fontWeight: 'bold', color: scoreColor }}>{scorePredicted}</span>
-            <span style={{ fontSize: '0.75rem', color: '#aaa' }}>/ 100</span>
-          </div>
-          <p style={{ color: scoreColor, fontWeight: 'bold', marginTop: '8px', fontSize: '0.9rem' }}>{scoreLabel}</p>
+        {/* Score Gauge Chart */}
+        <div style={{ width: '220px' }}>
+          <ScoreGauge score={scorePredicted} />
         </div>
       </div>
 
@@ -113,6 +101,13 @@ export default function Results() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Criteria Bar Chart */}
+      {rubricBreakdown.length > 0 && (
+        <div className="card" style={{ marginBottom: '2rem' }}>
+          <CriteriaChart rubricBreakdown={rubricBreakdown} />
         </div>
       )}
 

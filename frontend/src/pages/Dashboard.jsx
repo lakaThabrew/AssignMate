@@ -5,6 +5,7 @@ import useEvaluations from '../hooks/useEvaluations';
 import Hero from '../components/Hero';
 import StatsCard from '../components/StatsCard';
 import EvaluationCard from '../components/EvaluationCard';
+import { ScoreHistoryChart } from '../components/Charts';
 
 export default function Dashboard() {
   const { role, userInfo } = useRole();
@@ -45,6 +46,13 @@ export default function Dashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', marginTop: '3rem' }}>
         <h2>{role === 'student' ? 'Your Recent Evaluations' : 'Latest Submissions'}</h2>
       </div>
+
+      {/* Score trend chart */}
+      {history.length >= 2 && (
+        <div className="card" style={{ marginBottom: '2rem' }}>
+          <ScoreHistoryChart history={history} />
+        </div>
+      )}
 
       {loading ? (
         <div className="loader"></div>
