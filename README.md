@@ -1,66 +1,148 @@
-# AssignMate Pro
+# AssignMate Pro 🎓
 
-## Selected Domain
-Education Technology (EdTech) & Generative AI
+> **Rubric-aware academic evaluation platform powered by Google Gemini AI**
+> Built for the University Hackathon — EdTech & Generative AI Category
 
-## Problem Statement
-Grading academic assignments is a time-consuming and manual process for educators. Furthermore, students often lack detailed pre-submission feedback on how well their work aligns with the complex criteria defined in an assignment rubric. This leaves a gap in formative assessment, causing students to miss key requirements and causing educators to spend excess time reiterating missing components rather than providing higher-level guidance.
+---
 
-## Proposed Solution
-AssignMate Pro is a rubric-aware academic evaluation system driven by Generative AI and Document Analysis methods. It allows lecturers to upload or generate structured grading rubrics. Students can upload their assignments (PDF/DOCX) prior to final submission to receive detailed, automated AI-generated feedback. The system breaks down the assignment against each criteria block in the rubric, highlighting strengths, weaknesses, missing criteria, predicted scores, and potential plagiarism risks. This gives lecturers a detailed class overview and saves grading time, while helping students improve their submissions iteratively.
+## 🧩 Selected Domain
+**Education Technology (EdTech) & Generative AI**
 
-## Team Details
-- **Team Name**: [Insert Team Name Here]
-- **Members**: [Insert Members Here]
-- **University**: [Insert University Here]
-- **Selected Domain**: Education Technology (EdTech) & Generative AI
+---
 
-## Technology Stack & Architecture Overview
-- **Frontend**: React.js (Vite), CSS/Vanilla styling with modern UI considerations.
-- **Backend**: Node.js with Express.js.
-- **Database**: MongoDB (Mongoose ORM).
-- **AI Integration**: Google Generative AI (Gemini APIs) for advanced rubric parsing, feedback generation, and embeddings.
-- **Document Parsing**: `pdf-parse` for robust PDF extraction.
-- **Architecture**: A modular Client-Server Model where the React UI securely communicates with a RESTful Express API. The backend processes document uploads locally, extracts content, and delegates reasoning tasks to the LLM layer before persisting results to MongoDB.
+## 🚩 Problem Statement
+Grading academic assignments is a time-consuming, manual process for educators. Students often lack detailed pre-submission feedback on how well their work aligns with the rubric criteria — leading to missed requirements and inefficient revision cycles.
 
-## Instructions on How to Run the Project
+---
+
+## 💡 Proposed Solution
+**AssignMate Pro** is a rubric-aware academic evaluation system that bridges the gap between student effort and lecturer expectations.
+
+- **Lecturers** create structured grading rubrics (manually or via AI text parsing) and get class-wide analytics.
+- **Students** upload their assignments (PDF/DOCX) to receive instant AI-generated feedback — criterion-by-criterion — before final submission.
+- The system highlights **strengths**, **weaknesses**, **missing criteria**, predicts a **score**, and flags **plagiarism risk**.
+
+---
+
+## 👥 Team Details
+
+| Role | Name |
+|------|------|
+| Team Lead / Full Stack Developer | Member 1 |
+| AI Researcher / Prompt Engineer | Member 2 |
+| UI/UX Designer / Frontend Dev | Member 3 |
+| Backend Architect / DB Engineer | Member 4 |
+
+- **Team Name**: [Insert Team Name]
+- **University**: [Insert University]
+- **Domain**: Education Technology (EdTech) & Generative AI
+
+---
+
+## 🛠 Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React.js (Vite), Recharts, Three.js, Lucide Icons |
+| Backend | Node.js, Express.js |
+| Database | MongoDB (Mongoose ORM) |
+| AI Engine | Google Gemini 1.5 Pro & Flash API |
+| File Parsing | `pdf-parse`, `mammoth` (DOCX) |
+| Dev Tooling | Concurrently, dotenv, multer |
+
+### Architecture
+```
+┌────────────────────────────────────────────┐
+│               React Frontend               │
+│  (Vite · Recharts · Three.js · Context)    │
+└───────────────────┬────────────────────────┘
+                    │ REST API
+┌───────────────────▼────────────────────────┐
+│           Node.js / Express Backend         │
+│  /api/evaluate  /api/history  /api/rubrics  │
+└──────────┬──────────────────┬──────────────┘
+           │                  │
+    ┌──────▼──────┐   ┌───────▼───────┐
+    │   MongoDB   │   │  Gemini AI    │
+    │  (Mongoose) │   │  (LLM Layer)  │
+    └─────────────┘   └───────────────┘
+```
+
+---
+
+## ✨ Key Features
+
+- 🔐 **Role-Based Authentication** — Student & Lecturer portals with account creation
+- 📋 **AI Rubric Builder** — Generate structured criteria from raw text using Gemini
+- 📄 **Document Upload** — Supports PDF and DOCX assignment files
+- 🤖 **Deep AI Analysis** — Per-criterion evaluation with evidence quotes and coverage %
+- 📊 **Rich Visualizations** — Radial score gauge, criteria bar chart, score history trend
+- 💬 **Tabbed Feedback** — Strengths, Weaknesses, Missing Parts, and Suggestions
+- 🛡 **Plagiarism Risk** — AI-powered originality detection flag
+- 🧠 **Personalized Dashboard** — Role-specific stats and recent evaluation history
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
-- MongoDB (Local or Atlas URI)
-- Google Gemini API Key
+- MongoDB (local or Atlas)
+- Google Gemini API Key — [Get one here](https://aistudio.google.com/app/apikey)
 
-### Backend Setup
-1. Navigate to the `backend` directory:
-   \`\`\`bash
-   cd backend
-   \`\`\`
-2. Install dependencies:
-   \`\`\`bash
-   npm install
-   \`\`\`
-3. Create a \`.env\` file in the `backend` folder and add:
-   \`\`\`env
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   GEMINI_API_KEY=your_gemini_api_key
-   \`\`\`
-4. Start the backend development server:
-   \`\`\`bash
-   npm run dev
-   \`\`\`
+### Quick Start (Recommended)
+```bash
+# 1. Clone the repo and install root dependencies
+npm install
 
-### Frontend Setup
-1. Navigate to the `frontend` directory:
-   \`\`\`bash
-   cd frontend
-   \`\`\`
-2. Install dependencies:
-   \`\`\`bash
-   npm install
-   \`\`\`
-3. Start the Vite development server:
-   \`\`\`bash
-   npm run dev
-   \`\`\`
-4. Open the displayed `localhost` link in your browser.
+# 2. Set up backend environment
+cp backend/.env.example backend/.env
+# Edit backend/.env and add your GEMINI_API_KEY and MONGO_URI
+
+# 3. Install all dependencies
+cd backend && npm install
+cd ../frontend && npm install && cd ..
+
+# 4. Run both servers simultaneously
+npm run dev
+```
+> The frontend will be available at `http://localhost:5173`
+> The backend API runs at `http://localhost:5000`
+
+### Backend `.env` Variables
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/assign_mate_pro
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+---
+
+## 📁 Project Structure
+
+```
+AssignMate/
+├── frontend/
+│   └── src/
+│       ├── components/     # Navbar, Footer, Charts, FeedbackPanel, Hero
+│       ├── context/        # RoleContext (global auth + role state)
+│       ├── hooks/          # useEvaluations (custom data hook)
+│       ├── pages/          # Dashboard, Upload, Results, History, About, Contact
+│       └── services/       # api.js (centralized Axios service layer)
+├── backend/
+│   ├── models/             # Evaluation.js, Rubric.js (Mongoose schemas)
+│   ├── routes/             # evaluate.js, history.js, rubrics.js
+│   └── utils/              # gemini.js (AI evaluation + rubric parsing)
+└── package.json            # Concurrently dev script
+```
+
+---
+
+## 📸 App Screenshots
+
+> _Add screenshots of the Login page, Dashboard, and Results page here_
+
+---
+
+## 📜 License
+MIT — Built for educational and hackathon purposes.
