@@ -9,26 +9,35 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText) {
   }
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      generationConfig: { responseMimeType: "application/json" }
+    });
     
     const prompt = `
-      You are an expert academic evaluator. 
-      Analyze the following student assignment against the provided grading rubric.
+      System: You are an expert academic evaluator for university-level assignments.
+      Task: Analyze the provided student assignment against the grading rubric.
       
       Rubric:
       ${rubricText}
       
-      Student Assignment:
+      Assignment Content:
       ${assignmentText.substring(0, 30000)}
       
-      Return a JSON object strictly following this structure (No markdown, just raw JSON):
+      Instructions:
+      1. Predict a score (0-100) based on how well the assignment meets rubric criteria.
+      2. Identify specific strengths and critical missing parts.
+      3. Evaluate plagiarism risk based on structural patterns and external knowledge.
+      4. Break down each rubric criterion and its fulfillment status.
+      
+      Output Schema:
       {
-        "scorePredicted": number (0-100),
-        "strengths": [array of strings],
-        "weaknesses": [array of strings],
-        "missingCriteria": [array of strings],
-        "suggestions": [array of strings],
-        "plagiarismRisk": "string (e.g. Low, Medium, High)",
+        "scorePredicted": number,
+        "strengths": string[],
+        "weaknesses": string[],
+        "missingCriteria": string[],
+        "suggestions": string[],
+        "plagiarismRisk": "Low" | "Medium" | "High",
         "rubricBreakdown": [
           {
             "criterion": string,

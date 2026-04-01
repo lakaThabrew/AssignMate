@@ -1,51 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { CheckCircle, AlertTriangle, Info, ShieldAlert, Navigation } from 'lucide-react';
+import { useLocation, Link, useParams } from 'react-router-dom';
+import { CheckCircle, AlertTriangle, Info, ShieldAlert, Navigation, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 export default function Results() {
+  const { id } = useParams();
   const location = useLocation();
   const [evaluation, setEvaluation] = useState(null);
-
-  // Mock data to preview UI layout if accessed directly
-  const mockData = {
-    scorePredicted: 82,
-    strengths: [
-      "Excellent introduction and clear thesis statement.",
-      "Methodology section uses rigorous statistical tools.",
-      "Good structure and readability."
-    ],
-    weaknesses: [
-      "Missing critical review of existing literature in chapter 2.",
-      "Conclusion is too brief and rushed."
-    ],
-    missingCriteria: [
-      "Original dataset link or reference not provided.",
-      "No appendices with code snippets as requested."
-    ],
-    suggestions: [
-      "Expand the literature review by citing recent 2024 papers.",
-      "Add a detailed discussion on limitations.",
-      "Include dataset references and code block in the appendix."
-    ],
-    plagiarismRisk: "Low (12% match)",
-    rubricBreakdown: [
-      { criterion: "Introduction", status: "met", score: "20/20" },
-      { criterion: "Methodology", status: "met", score: "25/30" },
-      { criterion: "Literature Review", status: "partial", score: "10/20" },
-      { criterion: "Conclusion", status: "missing", score: "5/15" },
-      { criterion: "Formatting", status: "met", score: "15/15" },
-    ]
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If we have state (passing from Upload or Dashboard)
     if (location.state && location.state.evaluation) {
       setEvaluation(location.state.evaluation);
+      setLoading(false);
+    } 
+    // If no state but we have an ID (page refresh or direct link)
+    else if (id && id !== 'new') {
+      axios.get(`http://localhost:5000/api/history/${id}`)
+        .then(res => {
+          setEvaluation(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Error fetching evaluation:", err);
+          setLoading(false);
+        });
     } else {
-      setEvaluation(mockData); // Use mock for demo
+      setLoading(false);
     }
-  }, [location]);
+  }, [id, location]);
 
-  if (!evaluation) return <div style={{ textAlign: 'center', padding: '5rem' }}><div className="loader"></div></div>;
+  if (loading) return <div style={{ textAlign: 'center', padding: '10rem' }}><div className="loader"></div><p>Fetching evaluation report...</p></div>;
+
+  if (!evaluation) return (
+    <div className="card" style={{ textAlign: 'center', padding: '5rem' }}>
+      <AlertTriangle size={48} color="#e74c3c" style={{ marginBottom: '1rem' }} />
+      <h2>Report Not Found</h2>
+      <p style={{ marginTop: '1rem', color: '#666' }}>We couldn't find the evaluation report you're looking for.</p>
+      <Link to="/" className="btn btn-primary" style={{ marginTop: '2rem' }}><ArrowLeft size={20} /> Back to Dashboard</Link>
+    </div>
+  );
 
   const scoreColor = evaluation.scorePredicted >= 80 ? 'var(--color-accent)' : evaluation.scorePredicted >= 60 ? '#f0ad4e' : '#dc3545';
 

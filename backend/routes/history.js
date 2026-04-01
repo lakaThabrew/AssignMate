@@ -13,4 +13,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get single evaluation by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const evaluation = await Evaluation.findById(req.params.id);
+    if (!evaluation) return res.status(404).json({ error: "Not found" });
+    res.json(evaluation);
+  } catch (err) {
+    console.error("Error fetching single evaluation:", err);
+    res.status(500).json({ error: "Failed to load evaluation." });
+  }
+});
+
 module.exports = router;

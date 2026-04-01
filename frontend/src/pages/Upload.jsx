@@ -48,8 +48,8 @@ export default function Upload() {
         }
       });
 
-      // Navigate to results with the data
-      navigate('/results/new', { state: { evaluation: response.data } });
+      // Navigate to results with the dynamic ID
+      navigate(`/results/${response.data._id}`, { state: { evaluation: response.data } });
     } catch (err) {
       console.error(err);
       setError('Error analyzing assignment. Please try again or check backend connection.');

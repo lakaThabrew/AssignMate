@@ -2,8 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const fs = require("fs");
+const mammoth = require("mammoth");
 const { evaluateAssignmentWithRubric } = require("../utils/gemini");
-const Evaluation = require("../models/Evaluation"); // ADDED
+const Evaluation = require("../models/Evaluation");
 const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
@@ -14,24 +15,42 @@ router.post("/", upload.single("assignment"), async (req, res) => {
     const file = req.file;
 
     if (!file || !rubricText) {
+      if (file) fs.unlinkSync(file.path);
       return res.status(400).json({ error: "File and rubric text are required" });
     }
 
     // Read the uploaded file
     const dataBuffer = fs.readFileSync(file.path);
     
-    // Parse PDF text
+    // Parse PDF/DOCX text
     let assignmentText = "";
-    if (file.originalname.endsWith('.pdf')) {
+    if (file.originalname.toLowerCase().endsWith('.pdf')) {
       const data = await pdfParse(dataBuffer);
       assignmentText = data.text;
+    } else if (file.originalname.toLowerCase().endsWith('.docx')) {
+      const result = await mammoth.extractRawText({ buffer: dataBuffer });
+      assignmentText = result.value;
     } else {
       assignmentText = dataBuffer.toString('utf-8');
     }
 
     // Evaluate
     console.log("Evaluating document...", file.originalname);
-    const evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText);
+    let evaluationData;
+    try {
+      evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText);
+    } catch (aiError) {
+      console.error("AI Evaluation failed, using safe fallback:", aiError);
+      evaluationData = {
+        scorePredicted: 0,
+        strengths: [],
+        weaknesses: ["AI analysis failed for this document."],
+        missingCriteria: [],
+        suggestions: ["Try re-uploading or simplifying the rubric."],
+        plagiarismRisk: "Unknown",
+        rubricBreakdown: []
+      };
+    }
     
     // Save to database
     const newDoc = new Evaluation({
