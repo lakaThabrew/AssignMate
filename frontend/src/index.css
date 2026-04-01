@@ -51,9 +51,10 @@ h1, h2, h3, h4, .logo {
 
 /* ── Layout ─────────────────────────────────────────── */
 .container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 /* ── Navbar ─────────────────────────────────────────── */
@@ -72,9 +73,10 @@ h1, h2, h3, h4, .logo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -114,7 +116,7 @@ h1, h2, h3, h4, .logo {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   margin-bottom: 1.25rem;
   /* removed translateY hover – it was causing overlap clipping */
   transition: border-color 0.3s, box-shadow 0.3s;
