@@ -14,23 +14,42 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText) {
       generationConfig: { responseMimeType: "application/json" }
     });
     
+    // Detect if rubric is structured JSON (from RubricBuilder) or plain text
+    let parsedRubric;
+    try {
+      parsedRubric = JSON.parse(rubricText);
+    } catch {
+      parsedRubric = null;
+    }
+
+    const rubricSection = parsedRubric
+      ? parsedRubric.map(c => `- ${c.name} (${c.weight}%): ${c.description || ''}`).join('\n')
+      : rubricText;
+
     const prompt = `
       System: You are an expert academic evaluator for university-level assignments.
-      Task: Analyze the provided student assignment against the grading rubric.
-      
-      Rubric:
-      ${rubricText}
-      
-      Assignment Content:
-      ${assignmentText.substring(0, 30000)}
-      
-      Instructions:
-      1. Predict a score (0-100) based on how well the assignment meets rubric criteria.
-      2. Identify specific strengths and critical missing parts.
-      3. Evaluate plagiarism risk based on structural patterns and external knowledge.
-      4. Break down each rubric criterion and its fulfillment status.
-      
-      Output Schema:
+
+      RUBRIC CRITERIA:
+      ${rubricSection}
+
+      STUDENT ASSIGNMENT TEXT:
+      ${assignmentText.substring(0, 28000)}
+
+      TASK: Perform a rigorous, criterion-by-criterion evaluation. For each criterion:
+      1. Find direct evidence in the assignment text (quote or paraphrase).
+      2. Judge if the criterion is fully met, partial, or missing.
+      3. Calculate a numeric score based on the criterion weight.
+
+      RULES:
+      - scorePredicted must be an integer 0-100, weighted sum of all criteria scores.
+      - strengths: specific positive observations from the text (min 3).
+      - weaknesses: specific problems or gaps found (min 2).
+      - missingCriteria: criteria that are absent or severely underdeveloped.
+      - suggestions: actionable improvements the student should make (min 3).
+      - plagiarismRisk: "Low", "Medium", or "High" based on writing style, repetition, generic phrasing.
+      - rubricBreakdown: one entry per criterion with a supportingEvidence quote from the text.
+
+      OUTPUT (strict JSON only, no markdown):
       {
         "scorePredicted": number,
         "strengths": string[],
@@ -41,8 +60,11 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText) {
         "rubricBreakdown": [
           {
             "criterion": string,
+            "weight": number,
             "status": "met" | "partial" | "missing",
-            "score": string
+            "score": string,
+            "coveragePercent": number,
+            "supportingEvidence": string
           }
         ]
       }

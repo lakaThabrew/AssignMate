@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link, useParams } from 'react-router-dom';
-import { CheckCircle, AlertTriangle, Info, ShieldAlert, Navigation, ArrowLeft } from 'lucide-react';
-import axios from 'axios';
+import { CheckCircle, AlertTriangle, Info, ShieldAlert, ArrowLeft, Lightbulb, TrendingUp } from 'lucide-react';
+import { evaluationService } from '../services/api';
 
 export default function Results() {
   const { id } = useParams();
@@ -10,116 +10,160 @@ export default function Results() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If we have state (passing from Upload or Dashboard)
-    if (location.state && location.state.evaluation) {
+    if (location.state?.evaluation) {
       setEvaluation(location.state.evaluation);
       setLoading(false);
-    } 
-    // If no state but we have an ID (page refresh or direct link)
-    else if (id && id !== 'new') {
-      axios.get(`http://localhost:5000/api/history/${id}`)
-        .then(res => {
-          setEvaluation(res.data);
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error("Error fetching evaluation:", err);
-          setLoading(false);
-        });
+    } else if (id) {
+      evaluationService.getById(id)
+        .then(res => { setEvaluation(res.data); setLoading(false); })
+        .catch(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, [id, location]);
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '10rem' }}><div className="loader"></div><p>Fetching evaluation report...</p></div>;
+  if (loading) return (
+    <div style={{ textAlign: 'center', padding: '10rem' }}>
+      <div className="loader"></div>
+      <p style={{ marginTop: '1rem', color: '#aaa' }}>Fetching evaluation report...</p>
+    </div>
+  );
 
   if (!evaluation) return (
     <div className="card" style={{ textAlign: 'center', padding: '5rem' }}>
       <AlertTriangle size={48} color="#e74c3c" style={{ marginBottom: '1rem' }} />
       <h2>Report Not Found</h2>
-      <p style={{ marginTop: '1rem', color: '#666' }}>We couldn't find the evaluation report you're looking for.</p>
       <Link to="/" className="btn btn-primary" style={{ marginTop: '2rem' }}><ArrowLeft size={20} /> Back to Dashboard</Link>
     </div>
   );
 
-  const scoreColor = evaluation.scorePredicted >= 80 ? 'var(--color-accent)' : evaluation.scorePredicted >= 60 ? '#f0ad4e' : '#dc3545';
+  const { scorePredicted, strengths = [], weaknesses = [], missingCriteria = [], suggestions = [], plagiarismRisk, rubricBreakdown = [] } = evaluation;
+
+  const scoreColor = scorePredicted >= 80 ? '#2ecc71' : scorePredicted >= 60 ? '#f39c12' : '#e74c3c';
+  const scoreLabel = scorePredicted >= 80 ? 'Excellent' : scorePredicted >= 60 ? 'Satisfactory' : 'Needs Work';
+
+  const statusColor = { met: '#2ecc71', partial: '#f39c12', missing: '#e74c3c' };
+  const plagiarismColor = { Low: '#2ecc71', Medium: '#f39c12', High: '#e74c3c' };
 
   return (
     <div>
-      <div className="header-light" style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h1 style={{ color: 'var(--color-dark)', marginBottom: '5px' }}>Evaluation Report</h1>
-          <p style={{ color: '#666' }}>Document analysis finished safely.</p>
+          <Link to="/" style={{ color: '#aaa', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <ArrowLeft size={16} /> Back to Dashboard
+          </Link>
+          <h1 style={{ fontSize: '2rem', marginTop: '0.5rem' }}>
+            Evaluation <span className="header-accent">Report</span>
+          </h1>
+          <p style={{ color: '#666', marginTop: '5px' }}>{evaluation.assignmentName}</p>
         </div>
-        <div style={{ '--score-pct': `${evaluation.scorePredicted}%` }} className="score-circle">
-          <div className="score-circle-text" style={{ color: scoreColor }}>
-            {evaluation.scorePredicted}
+        {/* Score Circle */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '140px', height: '140px', borderRadius: '50%',
+            border: `6px solid ${scoreColor}`,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: `radial-gradient(circle, ${scoreColor}15, transparent)`,
+            boxShadow: `0 0 30px ${scoreColor}40`
+          }}>
+            <span style={{ fontSize: '2.8rem', fontWeight: 'bold', color: scoreColor }}>{scorePredicted}</span>
+            <span style={{ fontSize: '0.75rem', color: '#aaa' }}>/ 100</span>
           </div>
+          <p style={{ color: scoreColor, fontWeight: 'bold', marginTop: '8px', fontSize: '0.9rem' }}>{scoreLabel}</p>
         </div>
       </div>
 
-      <div className="grid-2">
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#155724' }}>
-            <CheckCircle size={24} /> Strengths
-          </h2>
-          <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
-            {evaluation.strengths.map((s, i) => <li key={i}>{s}</li>)}
-          </ul>
-        </div>
-
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#721c24' }}>
-            <AlertTriangle size={24} /> Missing Criteria
-          </h2>
-          <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
-            {evaluation.missingCriteria.map((m, i) => <li key={i}>{m}</li>)}
-          </ul>
-        </div>
-      </div>
-
-      <div className="card">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: 'var(--color-secondary)' }}>
-          <Navigation size={24} /> Improvement Suggestions
-        </h2>
-        <div style={{ background: 'rgba(193, 191, 255, 0.1)', padding: '1.5rem', borderRadius: '8px' }}>
-          <ul style={{ paddingLeft: '20px', lineHeight: '1.8', margin: 0 }}>
-            {evaluation.suggestions.map((s, i) => <li key={i}>{s}</li>)}
-          </ul>
-        </div>
-      </div>
-
-      <div className="grid-2">
-        <div className="card">
+      {/* Rubric Breakdown - main analysis section */}
+      {rubricBreakdown.length > 0 && (
+        <div className="card" style={{ marginBottom: '2rem' }}>
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
-            <Info size={24} /> Rubric Alignment
+            <Info size={22} color="var(--color-primary)" /> Criterion-by-Criterion Analysis
           </h2>
-          {evaluation.rubricBreakdown.map((r, i) => (
-            <div key={i} className={`rubric-item ${r.status === 'missing' ? 'missing' : ''}`}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: '600' }}>{r.criterion}</span>
-                <span className={`badge ${r.status === 'met' ? 'badge-success' : r.status === 'partial' ? 'badge-warning' : 'badge-danger'}`}>
-                  {r.score}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {rubricBreakdown.map((r, i) => {
+              const coverage = r.coveragePercent ?? (r.status === 'met' ? 100 : r.status === 'partial' ? 55 : 5);
+              const color = statusColor[r.status] || '#aaa';
+              return (
+                <div key={i} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '1.2rem', borderLeft: `4px solid ${color}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontWeight: '700', fontSize: '1rem' }}>{r.criterion}</span>
+                      {r.weight && <span style={{ fontSize: '0.75rem', color: '#aaa', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '20px' }}>{r.weight}%</span>}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontWeight: 'bold', color, fontSize: '0.95rem' }}>{r.score}</span>
+                      <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', background: `${color}20`, color }}>{r.status.toUpperCase()}</span>
+                    </div>
+                  </div>
 
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#856404' }}>
-            <ShieldAlert size={24} /> Plagiarism / Originality
-          </h2>
-          <p>The document was analyzed against known academic databases and patterns.</p>
-          <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#fff3cd', border: '1px solid #ffeeba', borderRadius: '8px', color: '#856404', fontWeight: 'bold' }}>
-            Risk Level: {evaluation.plagiarismRisk}
+                  {/* Coverage bar */}
+                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', overflow: 'hidden', marginBottom: '10px' }}>
+                    <div style={{ height: '100%', width: `${coverage}%`, background: `linear-gradient(90deg, ${color}, ${color}aa)`, borderRadius: '10px', transition: 'width 1s ease' }}></div>
+                  </div>
+
+                  {/* Supporting Evidence */}
+                  {r.supportingEvidence && (
+                    <blockquote style={{ margin: 0, padding: '8px 12px', borderLeft: '3px solid rgba(255,255,255,0.1)', color: '#888', fontSize: '0.85rem', fontStyle: 'italic', lineHeight: '1.6' }}>
+                      "{r.supportingEvidence}"
+                    </blockquote>
+                  )}
+                </div>
+              );
+            })}
           </div>
-          <p style={{ marginTop: '20px', color: '#666', fontSize: '0.9rem' }}>
-            * Note: This score is a prediction based on structural commonalities and LLM analysis.
-          </p>
+        </div>
+      )}
+
+      {/* Strengths & Missing */}
+      <div className="grid-2">
+        <div className="card">
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#2ecc71' }}>
+            <CheckCircle size={22} /> Strengths
+          </h2>
+          <ul style={{ paddingLeft: '20px', lineHeight: '2' }}>
+            {strengths.map((s, i) => <li key={i} style={{ color: '#ccc' }}>{s}</li>)}
+          </ul>
+        </div>
+        <div className="card">
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#e74c3c' }}>
+            <AlertTriangle size={22} /> Missing / Weak Criteria
+          </h2>
+          {missingCriteria.length > 0 ? (
+            <ul style={{ paddingLeft: '20px', lineHeight: '2' }}>
+              {missingCriteria.map((m, i) => <li key={i} style={{ color: '#ccc' }}>{m}</li>)}
+            </ul>
+          ) : <p style={{ color: '#2ecc71' }}>✓ All criteria addressed!</p>}
         </div>
       </div>
 
+      {/* Suggestions + Plagiarism */}
+      <div className="grid-2">
+        <div className="card">
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: 'var(--color-secondary)' }}>
+            <Lightbulb size={22} /> Improvement Suggestions
+          </h2>
+          <ol style={{ paddingLeft: '20px', lineHeight: '2' }}>
+            {suggestions.map((s, i) => <li key={i} style={{ color: '#ccc' }}>{s}</li>)}
+          </ol>
+        </div>
+        <div className="card">
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#f39c12' }}>
+            <ShieldAlert size={22} /> Plagiarism / Originality
+          </h2>
+          <p style={{ color: '#aaa', marginBottom: '1.5rem' }}>
+            Based on structural patterns, writing style consistency, and generic phrasing analysis.
+          </p>
+          <div style={{ padding: '1rem 1.5rem', borderRadius: '12px', background: `${plagiarismColor[plagiarismRisk] || '#aaa'}15`, border: `1px solid ${plagiarismColor[plagiarismRisk] || '#aaa'}40`, display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <TrendingUp size={24} color={plagiarismColor[plagiarismRisk] || '#aaa'} />
+            <div>
+              <p style={{ fontSize: '0.8rem', color: '#aaa' }}>Risk Level</p>
+              <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: plagiarismColor[plagiarismRisk] || '#aaa' }}>{plagiarismRisk}</p>
+            </div>
+          </div>
+          <p style={{ marginTop: '1rem', color: '#555', fontSize: '0.8rem' }}>* Prediction based on AI pattern detection. Not a definitive plagiarism check.</p>
+        </div>
+      </div>
     </div>
   );
 }
