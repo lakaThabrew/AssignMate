@@ -7,6 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/evaluate", require("./routes/evaluate"));
+
 app.get("/", (req, res) => {
     res.send("AssignMate Pro API is running...");
 });
