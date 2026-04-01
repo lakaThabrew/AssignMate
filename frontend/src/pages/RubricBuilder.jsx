@@ -46,6 +46,23 @@ export default function RubricBuilder() {
     }
   };
 
+  const handleAIGenerate = async () => {
+    const raw = window.prompt("Paste your raw rubric text here (e.g. from an assignment brief or email):");
+    if (!raw) return;
+
+    setLoading(true);
+    try {
+      const res = await evaluationService.parseRubric(raw);
+      setCriteria(res.data);
+      alert('AI generated structured criteria from your text!');
+    } catch (err) {
+      console.error('AI Parsing error', err);
+      alert('Failed to parse text with AI');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (success) {
     return (
       <div className="card" style={{ textAlign: 'center', padding: '5rem', marginTop: '5rem' }}>
@@ -152,8 +169,13 @@ export default function RubricBuilder() {
             >
               <Save size={20} /> {loading ? 'Saving...' : 'Save Rubric'}
             </button>
-            <button className="btn btn-outline" style={{ width: '100%' }}>
-              <Sparkles size={20} /> Generate with AI
+            <button 
+              className="btn btn-outline" 
+              style={{ width: '100%' }}
+              onClick={handleAIGenerate}
+              disabled={loading}
+            >
+              <Sparkles size={20} /> {loading ? 'Analyzing...' : 'Generate with AI'}
             </button>
           </div>
         </div>

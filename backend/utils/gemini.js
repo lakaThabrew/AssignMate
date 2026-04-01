@@ -75,4 +75,50 @@ function getMockEvaluation() {
   };
 }
 
-module.exports = { evaluateAssignmentWithRubric };
+async function parseRubricText(rawText) {
+  if (!process.env.GEMINI_API_KEY) {
+    return [
+      { name: 'Introduction', weight: 20, description: 'Clearly state the purpose' },
+      { name: 'Analysis', weight: 40, description: 'Deep dive into findings' },
+      { name: 'Conclusion', weight: 20, description: 'Summary of outcomes' },
+      { name: 'Formatting', weight: 20, description: 'APA style compliance' },
+    ];
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash", 
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const prompt = `
+      Task: Convert the raw text below into a structured academic rubric.
+      Text:
+      ${rawText}
+
+      Requirements:
+      1. Identify individual grading components (criteria).
+      2. For each, give a clear name and long description of what constitutes a good job.
+      3. Assign an integer weight (0-100) such that the TOTAL SUM OF ALL WEIGHTS EQUALS EXACTLY 100.
+      
+      Output Schema:
+      [
+        {
+          "name": string,
+          "description": string,
+          "weight": number
+        }
+      ]
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text().trim();
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Gemini Rubric Parsing error:", error);
+    throw error;
+  }
+}
+
+module.exports = { evaluateAssignmentWithRubric, parseRubricText };

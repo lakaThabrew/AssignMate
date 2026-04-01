@@ -15,6 +15,7 @@ export const evaluationService = {
   getRubrics: () => api.get('/rubrics'),
   createRubric: (data) => api.post('/rubrics', data),
   deleteRubric: (id) => api.delete(`/rubrics/${id}`),
+  parseRubric: (text) => api.post('/rubrics/parse', { text }),
 };
 
 export default api;

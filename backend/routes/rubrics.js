@@ -1,6 +1,18 @@
-const express = require('express');
 const router = express.Router();
 const Rubric = require('../models/Rubric');
+const { parseRubricText } = require('../utils/gemini');
+
+// Parse raw text into structured criteria
+router.post('/parse', async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: 'Raw text is required' });
+    const structuredCriteria = await parseRubricText(text);
+    res.json(structuredCriteria);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Get all rubrics
 router.get('/', async (req, res) => {
