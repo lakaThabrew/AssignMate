@@ -1,3 +1,4 @@
+const express = require('express');
 const router = express.Router();
 const Rubric = require('../models/Rubric');
 const { parseRubricText } = require('../utils/gemini');

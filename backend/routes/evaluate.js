@@ -6,6 +6,7 @@ const mammoth = require("mammoth");
 const { evaluateAssignmentWithRubric } = require("../utils/gemini");
 const Evaluation = require("../models/Evaluation");
 const logger = require("../utils/logger");
+const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 

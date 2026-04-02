@@ -1,12 +1,13 @@
 const express = require("express");
 const Evaluation = require("../models/Evaluation");
 const logger = require("../utils/logger");
+const router = express.Router();
 
 // Get aggregated analytics for lecturers
 router.get("/summary", async (req, res) => {
   try {
     const totalEvaluations = await Evaluation.countDocuments();
-    
+
     if (totalEvaluations === 0) {
       return res.json({
         total: 0,
@@ -18,7 +19,7 @@ router.get("/summary", async (req, res) => {
     }
 
     const evaluations = await Evaluation.find();
-    
+
     let totalScore = 0;
     const distribution = { A: 0, B: 0, C: 0, D: 0, F: 0 };
     const plagiarism = { Low: 0, Medium: 0, High: 0 };
