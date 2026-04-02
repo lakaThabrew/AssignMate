@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, Filter, BookOpen } from "lucide-react";
 import useEvaluations from "../hooks/useEvaluations";
 import EvaluationCard from "../components/EvaluationCard";
-import { useRole } from "../context/RoleContext";
+import { useRole } from "../context/useRole";
 
 export default function History() {
   const { role, userInfo } = useRole();

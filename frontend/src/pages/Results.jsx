@@ -16,7 +16,7 @@ import {
 import api from "../services/api";
 import generatePDF from "../utils/pdfExport";
 import logger from "../utils/logger";
-import { useRole } from "../context/RoleContext";
+import { useRole } from "../context/useRole";
 
 const Results = () => {
   const { id } = useParams();

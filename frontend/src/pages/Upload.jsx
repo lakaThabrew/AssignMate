@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { evaluationService } from "../services/api";
 import logger from "../utils/logger";
-import { useRole } from "../context/RoleContext";
+import { useRole } from "../context/useRole";
 
 export default function Upload() {
   const { role, userInfo } = useRole();

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRole } from "../context/RoleContext";
+import { useRole } from "../context/useRole";
 import {
   BookOpen,
   GraduationCap,
