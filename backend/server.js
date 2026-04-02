@@ -10,6 +10,7 @@ app.use(express.json());
 app.use("/api/evaluate", require("./routes/evaluate"));
 app.use("/api/history", require("./routes/history"));
 app.use("/api/rubrics", require("./routes/rubrics"));
+app.use("/api/analytics", require("./routes/analytics"));
 
 app.get("/", (req, res) => {
     res.send("AssignMate Pro API is running...");

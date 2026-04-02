@@ -109,3 +109,34 @@ export function ScoreHistoryChart({ history = [] }) {
     </div>
   );
 }
+export function DistributionChart({ distribution = {} }) {
+  const data = [
+    { name: 'A (80-100)', value: distribution.A || 0, color: '#2ecc71' },
+    { name: 'B (70-79)', value: distribution.B || 0, color: '#3498db' },
+    { name: 'C (60-69)', value: distribution.C || 0, color: '#f1c40f' },
+    { name: 'D (50-59)', value: distribution.D || 0, color: '#e67e22' },
+    { name: 'F (<50)', value: distribution.F || 0, color: '#e74c3c' },
+  ].filter(d => d.value > 0);
+
+  return (
+    <div>
+      <h3 style={{ marginBottom: '1rem' }}>Score Distribution</h3>
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+          <XAxis dataKey="name" tick={{ fill: '#555', fontSize: 10 }} />
+          <YAxis allowDecimals={false} tick={{ fill: '#555', fontSize: 11 }} />
+          <Tooltip 
+            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+            contentStyle={{ background: '#1a1a2e', border: 'none', borderRadius: '10px' }}
+          />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

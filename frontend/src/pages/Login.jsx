@@ -46,7 +46,7 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div style={{ width: '100%', maxWidth: '460px' }}>
+      <div style={{ width: '100%', maxWidth: '600px' }}>
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
@@ -57,10 +57,10 @@ export default function Login() {
           }}>
             <BookOpen size={28} color="#fff" />
           </div>
-          <h1 style={{ fontSize: '1.9rem', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '4rem', marginBottom: '4px' }}>
             AssignMate <span className="header-accent">Pro</span>
           </h1>
-          <p style={{ color: '#aaa', fontSize: '0.88rem' }}>AI-powered academic evaluation platform</p>
+          <p style={{ color: '#aaa', fontSize: '1.3rem' }}>AI-powered academic evaluation platform</p>
         </div>
 
         <div className="card" style={{ marginBottom: 0 }}>
@@ -68,7 +68,7 @@ export default function Login() {
           {/* ── VIEW: PORTAL SELECTION ── */}
           {view === 'portal' && (
             <>
-              <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '1.2rem' }}>
+              <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '1.5rem' }}>
                 Choose Your Portal
               </h2>
               <p style={{ textAlign: 'center', color: '#aaa', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
@@ -89,7 +89,7 @@ export default function Login() {
                     <GraduationCap size={22} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: '700', color: '#fff', marginBottom: '2px' }}>Student Portal</p>
+                    <p style={{ fontWeight: '700', color: '#fff', marginBottom: '4px' }}>Student Portal</p>
                     <p style={{ fontSize: '0.8rem', color: '#888' }}>Upload assignments & get AI feedback</p>
                   </div>
                   <ArrowRight size={18} color="#555" />
@@ -108,7 +108,7 @@ export default function Login() {
                     <ShieldCheck size={22} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: '700', color: '#fff', marginBottom: '2px' }}>Lecturer Portal</p>
+                    <p style={{ fontWeight: '700', color: '#fff', marginBottom: '4px' }}>Lecturer Portal</p>
                     <p style={{ fontSize: '0.8rem', color: '#888' }}>Create rubrics & manage class analytics</p>
                   </div>
                   <ArrowRight size={18} color="#555" />
@@ -117,9 +117,9 @@ export default function Login() {
 
               {/* Divider */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.25rem' }}>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
-                <span style={{ color: '#555', fontSize: '0.8rem' }}>or continue with account</span>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+                <div style={{ flex: 1, height: '1px', background: '#ba9999ff' }} />
+                <span style={{ color: '#ba9999ff', fontSize: '0.8rem' }}>or continue with account</span>
+                <div style={{ flex: 1, height: '1px', background: '#ba9999ff' }} />
               </div>
 
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -222,7 +222,7 @@ export default function Login() {
 
         </div>
 
-        <p style={{ textAlign: 'center', color: '#3a3a55', fontSize: '0.78rem', marginTop: '1rem' }}>
+        <p style={{ textAlign: 'center', color: '#e9e9eeff', fontSize: '0.78rem', marginTop: '1rem' }}>
           AssignMate Pro · EchoBinary · University of Moratuwa
         </p>
       </div>

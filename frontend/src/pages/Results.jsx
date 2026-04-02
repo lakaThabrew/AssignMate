@@ -1,143 +1,223 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, Link, useParams } from 'react-router-dom';
-import { AlertTriangle, Info, ShieldAlert, ArrowLeft, TrendingUp } from 'lucide-react';
-import FeedbackPanel from '../components/FeedbackPanel';
-import { ScoreGauge, CriteriaChart } from '../components/Charts';
-import { evaluationService } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { 
+  FileText, 
+  CheckCircle, 
+  AlertTriangle, 
+  ArrowLeft, 
+  Download,
+  AlertCircle,
+  TrendingUp,
+  BrainCircuit,
+  Zap,
+  Target,
+  ChevronRight
+} from "lucide-react";
+import api from "../services/api";
+import generatePDF from "../utils/pdfExport";
 
-export default function Results() {
+const Results = () => {
   const { id } = useParams();
-  const location = useLocation();
-  const [evaluation, setEvaluation] = useState(null);
+  const navigate = useNavigate();
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (location.state?.evaluation) {
-      setEvaluation(location.state.evaluation);
-      setLoading(false);
-    } else if (id) {
-      evaluationService.getById(id)
-        .then(res => { setEvaluation(res.data); setLoading(false); })
-        .catch(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, [id, location]);
+    const fetchResults = async () => {
+      try {
+        const res = await api.get(`/history/${id}`);
+        setData(res.data);
+      } catch (err) {
+        console.error("Error fetching results:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResults();
+  }, [id]);
 
   if (loading) return (
-    <div style={{ textAlign: 'center', padding: '10rem' }}>
-      <div className="loader"></div>
-      <p style={{ marginTop: '1rem', color: '#aaa' }}>Fetching evaluation report...</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-slate-400 animate-pulse font-medium">Generating Report with Gemini 3 Pro AI...</p>
     </div>
   );
-
-  if (!evaluation) return (
-    <div className="card" style={{ textAlign: 'center', padding: '5rem' }}>
-      <AlertTriangle size={48} color="#e74c3c" style={{ marginBottom: '1rem' }} />
-      <h2>Report Not Found</h2>
-      <Link to="/" className="btn btn-primary" style={{ marginTop: '2rem' }}><ArrowLeft size={20} /> Back to Dashboard</Link>
+  
+  if (!data) return (
+    <div className="glass-card max-w-lg mx-auto mt-20 p-12 text-center">
+      <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+      <h2 className="text-2xl font-bold mb-4">Report Not Found</h2>
+      <Link to="/" className="btn-primary inline-flex items-center gap-2">
+        <ArrowLeft size={18} /> Back to Dashboard
+      </Link>
     </div>
   );
-
-  const { scorePredicted, strengths = [], weaknesses = [], missingCriteria = [], suggestions = [], plagiarismRisk, rubricBreakdown = [] } = evaluation;
-
-  const statusColor = { met: '#2ecc71', partial: '#f39c12', missing: '#e74c3c' };
-  const plagiarismColor = { Low: '#2ecc71', Medium: '#f39c12', High: '#e74c3c' };
 
   return (
-    <div>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+    <div className="results-container pb-20 animate-in fade-in duration-700">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-4">
         <div>
-          <Link to="/" style={{ color: '#aaa', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <ArrowLeft size={16} /> Back to Dashboard
-          </Link>
-          <h1 style={{ fontSize: '2rem', marginTop: '0.5rem' }}>
-            Evaluation <span className="header-accent">Report</span>
-          </h1>
-          <p style={{ color: '#666', marginTop: '5px' }}>{evaluation.assignmentName}</p>
-        </div>
-        {/* Score Gauge Chart */}
-        <div style={{ width: '220px' }}>
-          <ScoreGauge score={scorePredicted} />
-        </div>
-      </div>
-
-      {/* Rubric Breakdown - main analysis section */}
-      {rubricBreakdown.length > 0 && (
-        <div className="card" style={{ marginBottom: '2rem' }}>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
-            <Info size={22} color="var(--color-primary)" /> Criterion-by-Criterion Analysis
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {rubricBreakdown.map((r, i) => {
-              const coverage = r.coveragePercent ?? (r.status === 'met' ? 100 : r.status === 'partial' ? 55 : 5);
-              const color = statusColor[r.status] || '#aaa';
-              return (
-                <div key={i} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '1.2rem', borderLeft: `4px solid ${color}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontWeight: '700', fontSize: '1rem' }}>{r.criterion}</span>
-                      {r.weight && <span style={{ fontSize: '0.75rem', color: '#aaa', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '20px' }}>{r.weight}%</span>}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontWeight: 'bold', color, fontSize: '0.95rem' }}>{r.score}</span>
-                      <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', background: `${color}20`, color }}>{r.status.toUpperCase()}</span>
-                    </div>
-                  </div>
-
-                  {/* Coverage bar */}
-                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', overflow: 'hidden', marginBottom: '10px' }}>
-                    <div style={{ height: '100%', width: `${coverage}%`, background: `linear-gradient(90deg, ${color}, ${color}aa)`, borderRadius: '10px', transition: 'width 1s ease' }}></div>
-                  </div>
-
-                  {/* Supporting Evidence */}
-                  {r.supportingEvidence && (
-                    <blockquote style={{ margin: 0, padding: '8px 12px', borderLeft: '3px solid rgba(255,255,255,0.1)', color: '#888', fontSize: '0.85rem', fontStyle: 'italic', lineHeight: '1.6' }}>
-                      "{r.supportingEvidence}"
-                    </blockquote>
-                  )}
-                </div>
-              );
-            })}
+          <button 
+            onClick={() => navigate(-1)} 
+            className="text-slate-400 hover:text-white flex items-center gap-2 text-sm mb-2 transition-colors group"
+          >
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
+            Back to Overview
+          </button>
+          <div className="flex items-center gap-3">
+             <h1 className="text-3xl font-extrabold text-white tracking-tight">
+               Evaluation <span className="text-primary italic">Result</span>
+             </h1>
+             <span className="px-3 py-1 bg-white/10 rounded-lg text-xs font-mono text-slate-400">
+               #{id?.substring(0, 8)}
+             </span>
           </div>
-        </div>
-      )}
-
-      {/* Criteria Bar Chart */}
-      {rubricBreakdown.length > 0 && (
-        <div className="card" style={{ marginBottom: '1.25rem' }}>
-          <CriteriaChart rubricBreakdown={rubricBreakdown} />
-        </div>
-      )}
-
-      {/* Tabbed Feedback Panel */}
-      <FeedbackPanel
-        strengths={strengths}
-        weaknesses={weaknesses}
-        missingCriteria={missingCriteria}
-        suggestions={suggestions}
-      />
-
-      {/* Plagiarism */}
-      <div>
-        <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#f39c12' }}>
-            <ShieldAlert size={22} /> Plagiarism / Originality
-          </h2>
-          <p style={{ color: '#aaa', marginBottom: '1.5rem' }}>
-            Based on structural patterns, writing style consistency, and generic phrasing analysis.
+          <p className="text-slate-400 mt-1 flex items-center gap-2">
+            <FileText size={14} /> {data.assignmentName}
           </p>
-          <div style={{ padding: '1rem 1.5rem', borderRadius: '12px', background: `${plagiarismColor[plagiarismRisk] || '#aaa'}15`, border: `1px solid ${plagiarismColor[plagiarismRisk] || '#aaa'}40`, display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <TrendingUp size={24} color={plagiarismColor[plagiarismRisk] || '#aaa'} />
-            <div>
-              <p style={{ fontSize: '0.8rem', color: '#aaa' }}>Risk Level</p>
-              <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: plagiarismColor[plagiarismRisk] || '#aaa' }}>{plagiarismRisk}</p>
+        </div>
+        
+        <button 
+          onClick={() => generatePDF(data)} 
+          className="btn-primary flex items-center gap-3 px-6 py-3 rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+        >
+          <Download size={20} /> Download PDF Report
+        </button>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Score & Key Metrics */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="glass-card p-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Zap size={120} />
+            </div>
+            <h3 className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-2">Overall Score</h3>
+            <div className="relative inline-block">
+               <div className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 leading-none">
+                 {data.scorePredicted}
+               </div>
+               <div className="absolute -right-8 bottom-2 text-xl font-bold text-slate-500">/100</div>
+            </div>
+            <div className="mt-8 bg-slate-800/50 h-3 rounded-full overflow-hidden border border-white/5">
+              <div 
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-1000 ease-out"
+                style={{ width: `${data.scorePredicted}%` }}
+              ></div>
             </div>
           </div>
-          <p style={{ marginTop: '1rem', color: '#555', fontSize: '0.8rem' }}>* Prediction based on AI pattern detection. Not a definitive plagiarism check.</p>
+
+          <div className={`glass-card p-6 border-l-4 ${data.plagiarismRisk === 'High' ? 'border-red-500 pulse-animation' : 'border-emerald-500'}`}>
+            <div className="flex items-center justify-between mb-4">
+               <h3 className="flex items-center gap-2 font-bold text-lg">
+                 <Target size={20} className="text-slate-500" /> Plagiarism
+               </h3>
+               <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                 data.plagiarismRisk === 'High' ? 'bg-red-500 text-white' : 
+                 data.plagiarismRisk === 'Medium' ? 'bg-amber-500 text-black' : 
+                 'bg-emerald-500 text-white'
+               }`}>
+                 {data.plagiarismRisk} RISK
+               </span>
+            </div>
+            <p className="text-sm text-slate-400 leading-relaxed">
+               {data.plagiarismRisk === 'Low' 
+                 ? "Our AI audit found the writing to be highly original and consistent with authentic human prose." 
+                 : "Warning: High level of predictable linguistic patterns detected. Recommend thorough manual review."}
+            </p>
+          </div>
+        </div>
+
+        {/* Breakdown & Analysis */}
+        <div className="lg:col-span-8 space-y-8">
+          <div className="glass-card overflow-hidden">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <h3 className="flex items-center gap-3 font-bold text-xl text-white">
+                <CheckCircle className="text-emerald-500" size={24} /> 
+                Rubric Breakdown
+              </h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-slate-900/50 text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5">
+                    <th className="px-8 py-4">Criterion</th>
+                    <th className="px-8 py-4">Weight</th>
+                    <th className="px-8 py-4">Status</th>
+                    <th className="px-8 py-4 text-right">Score</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {data.rubricBreakdown.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="px-8 py-6">
+                        <div className="font-bold text-slate-200 group-hover:text-white transition-colors">{item.criterion}</div>
+                        <div className="text-xs text-slate-500 mt-1 max-w-sm italic opacity-0 h-0 group-hover:opacity-100 group-hover:h-auto transition-all duration-300">
+                          Evidence: "{item.supportingEvidence}"
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2">
+                           <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden">
+                             <div className="h-full bg-slate-500" style={{width: `${item.weight}%`}}></div>
+                           </div>
+                           <span className="text-xs font-mono text-slate-400">{item.weight}%</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className={`status-pill ${item.status}`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-right font-mono font-bold text-primary">
+                        {item.score}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="glass-card p-8 border-t-4 border-emerald-500/30">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-emerald-500/10 rounded-xl">
+                  <BrainCircuit className="text-emerald-400" size={24} />
+                </div>
+                <h3 className="font-bold text-lg text-white">Top Strengths</h3>
+              </div>
+              <ul className="space-y-4">
+                {data.strengths.map((s, i) => (
+                  <li key={i} className="flex gap-4 group">
+                    <ChevronRight size={18} className="text-emerald-500 mt-0.5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                    <span className="text-sm text-slate-300 leading-relaxed">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="glass-card p-8 border-t-4 border-amber-500/30">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-amber-500/10 rounded-xl">
+                  <AlertCircle className="text-amber-400" size={24} />
+                </div>
+                <h3 className="font-bold text-lg text-white">Growth Areas</h3>
+              </div>
+              <ul className="space-y-4">
+                {data.suggestions.map((s, i) => (
+                  <li key={i} className="flex gap-4 group">
+                    <Zap size={16} className="text-amber-500 mt-1 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+                    <span className="text-sm text-slate-300 leading-relaxed">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Results;

@@ -10,17 +10,19 @@ const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
 router.post("/", upload.single("assignment"), async (req, res) => {
+  const filePath = req.file ? req.file.path : null;
+  
   try {
-    const rubricText = req.body.rubricText;
+    const { rubricText, academicLevel } = req.body;
     const file = req.file;
 
     if (!file || !rubricText) {
-      if (file) fs.unlinkSync(file.path);
+      if (filePath) fs.unlinkSync(filePath);
       return res.status(400).json({ error: "File and rubric text are required" });
     }
 
     // Read the uploaded file
-    const dataBuffer = fs.readFileSync(file.path);
+    const dataBuffer = fs.readFileSync(filePath);
     
     // Parse PDF/DOCX text
     let assignmentText = "";
@@ -34,22 +36,18 @@ router.post("/", upload.single("assignment"), async (req, res) => {
       assignmentText = dataBuffer.toString('utf-8');
     }
 
+    if (!assignmentText || assignmentText.trim().length < 10) {
+      throw new Error("Could not extract meaningful text from the document.");
+    }
+
     // Evaluate
-    console.log("Evaluating document...", file.originalname);
+    console.log("Evaluating document...", file.originalname, "Level:", academicLevel);
     let evaluationData;
     try {
-      evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText);
+      evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText, academicLevel);
     } catch (aiError) {
-      console.error("AI Evaluation failed, using safe fallback:", aiError);
-      evaluationData = {
-        scorePredicted: 0,
-        strengths: [],
-        weaknesses: ["AI analysis failed for this document."],
-        missingCriteria: [],
-        suggestions: ["Try re-uploading or simplifying the rubric."],
-        plagiarismRisk: "Unknown",
-        rubricBreakdown: []
-      };
+      console.error("AI Evaluation failed:", aiError);
+      throw new Error("AI Engine failed to process this document. Please try again later.");
     }
     
     // Save to database
@@ -59,18 +57,19 @@ router.post("/", upload.single("assignment"), async (req, res) => {
     });
     const savedEvaluation = await newDoc.save();
 
-    // Clean up file
-    try {
-      fs.unlinkSync(file.path);
-    } catch(e) {}
+    // Clean up file immediately after success
+    if (filePath) {
+      fs.unlink(filePath, () => {}); // Async cleanup
+    }
 
     res.json(savedEvaluation);
   } catch (error) {
     console.error("Evaluation Route Error:", error);
-    try {
-      if (req.file) fs.unlinkSync(req.file.path);
-    } catch(e){}
-    res.status(500).json({ error: "Failed to evaluate assignment." });
+    // Cleanup on error
+    if (filePath) {
+      try { fs.unlinkSync(filePath); } catch(e){}
+    }
+    res.status(500).json({ error: error.message || "Failed to evaluate assignment." });
   }
 });
 

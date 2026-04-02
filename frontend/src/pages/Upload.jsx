@@ -8,6 +8,7 @@ export default function Upload() {
   const [rubrics, setRubrics] = useState([]);
   const [selectedRubricId, setSelectedRubricId] = useState('');
   const [rubricText, setRubricText] = useState('');
+  const [academicLevel, setAcademicLevel] = useState('University Undergraduate');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -40,13 +41,18 @@ export default function Upload() {
     
     // Use selected rubric text or manual text
     let finalRubric = rubricText;
-    if (selectedRubricId) {
+    if (selectedRubricId && selectedRubricId !== 'manual') {
       const rubric = rubrics.find(r => r._id === selectedRubricId);
       finalRubric = JSON.stringify(rubric.criteria);
     }
 
-    if (!finalRubric.trim()) {
-      setError('Please provide rubric text or select a rubric.');
+    if (!finalRubric.trim() && selectedRubricId === 'manual') {
+      setError('Please provide rubric text.');
+      return;
+    }
+    
+    if (!selectedRubricId) {
+      setError('Please select a rubric to continue.');
       return;
     }
 
@@ -57,12 +63,13 @@ export default function Upload() {
       const formData = new FormData();
       formData.append('assignment', assignment);
       formData.append('rubricText', finalRubric);
+      formData.append('academicLevel', academicLevel);
 
       const response = await evaluationService.evaluate(formData);
       navigate(`/results/${response.data._id}`, { state: { evaluation: response.data } });
     } catch (err) {
       console.error(err);
-      setError('Error analyzing assignment. Please try again.');
+      setError(err.response?.data?.error || 'Error analyzing assignment. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -117,7 +124,23 @@ export default function Upload() {
           </div>
 
           <div className="form-group" style={{ marginBottom: '2rem' }}>
-            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>2. Select Grading Rubric</label>
+            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>2. Academic Level / Context</label>
+            <select 
+              className="form-control" 
+              value={academicLevel} 
+              onChange={(e) => setAcademicLevel(e.target.value)}
+              style={{ padding: '15px' }}
+            >
+              <option value="Primary School">Primary School</option>
+              <option value="Secondary School">Secondary School (High School)</option>
+              <option value="University Undergraduate">University Undergraduate</option>
+              <option value="Post-Graduate/Masters/PhD">Post-Graduate / Masters / PhD</option>
+              <option value="Professional Certification">Professional Certification</option>
+            </select>
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '2rem' }}>
+            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>3. Select Grading Rubric</label>
             <select 
               className="form-control" 
               value={selectedRubricId} 

@@ -1,33 +1,24 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy_key");
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "dummy_key" });
 
-async function evaluateAssignmentWithRubric(assignmentText, rubricText) {
+async function evaluateAssignmentWithRubric(assignmentText, rubricText, academicLevel = "University Undergraduate") {
   if (!process.env.GEMINI_API_KEY) {
     console.warn("No GEMINI_API_KEY found. Returning mock evaluation.");
     return getMockEvaluation();
   }
-  
+
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
-      generationConfig: { responseMimeType: "application/json" }
-    });
-    
-    // Detect if rubric is structured JSON (from RubricBuilder) or plain text
+    // Detect if rubric is structured JSON or plain text
     let parsedRubric;
-    try {
-      parsedRubric = JSON.parse(rubricText);
-    } catch {
-      parsedRubric = null;
-    }
+    try { parsedRubric = JSON.parse(rubricText); } catch { parsedRubric = null; }
 
     const rubricSection = parsedRubric
       ? parsedRubric.map(c => `- ${c.name} (${c.weight}%): ${c.description || ''}`).join('\n')
       : rubricText;
 
     const prompt = `
-      System: You are an expert academic evaluator for university-level assignments.
+      System: You are an expert academic evaluator for ${academicLevel} level assignments.
 
       RUBRIC CRITERIA:
       ${rubricSection}
@@ -70,13 +61,19 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText) {
       }
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text().replace(/```json/gi, "").replace(/```/g, "").trim();
-    
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        thinkingConfig: { thinkingLevel: "high" },
+      },
+    });
+
+    const text = response.text.replace(/```json/gi, "").replace(/```/g, "").trim();
     return JSON.parse(text);
   } catch (error) {
-    console.error("Gemini Evaluation error:", error);
+    console.error("Gemini 3 Evaluation error:", error);
     throw error;
   }
 }
@@ -88,11 +85,11 @@ function getMockEvaluation() {
     weaknesses: ["Methodology section lacks statistical validation detail"],
     missingCriteria: ["Code snippets were not included in the appendix"],
     suggestions: ["Elaborate on the dataset selection process", "Include code snippets"],
-    plagiarismRisk: "Low (Mock Match 10%)",
+    plagiarismRisk: "Low",
     rubricBreakdown: [
-      { criterion: "Introduction", status: "met", score: "20/20" },
-      { criterion: "Methodology", status: "partial", score: "20/30" },
-      { criterion: "Formatting", status: "missing", score: "5/10" }
+      { criterion: "Introduction", weight: 20, status: "met", score: "20/20", coveragePercent: 95, supportingEvidence: "Mock evidence" },
+      { criterion: "Methodology", weight: 30, status: "partial", score: "20/30", coveragePercent: 55, supportingEvidence: "Mock evidence" },
+      { criterion: "Formatting", weight: 10, status: "missing", score: "5/10", coveragePercent: 10, supportingEvidence: "Mock evidence" }
     ]
   };
 }
@@ -108,11 +105,6 @@ async function parseRubricText(rawText) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash", 
-      generationConfig: { responseMimeType: "application/json" }
-    });
-
     const prompt = `
       Task: Convert the raw text below into a structured academic rubric.
       Text:
@@ -133,12 +125,19 @@ async function parseRubricText(rawText) {
       ]
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text().trim();
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        thinkingConfig: { thinkingLevel: "low" },
+      },
+    });
+
+    const text = response.text.trim();
     return JSON.parse(text);
   } catch (error) {
-    console.error("Gemini Rubric Parsing error:", error);
+    console.error("Gemini 3 Rubric Parsing error:", error);
     throw error;
   }
 }
