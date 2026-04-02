@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useRole } from '../context/RoleContext';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useRole } from "../context/useRole";
 
 export default function ProtectedRoute({ allowedRoles = [] }) {
   const { isLoggedIn, role } = useRole();
