@@ -12,6 +12,7 @@ app.use("/api/history", require("./routes/history"));
 app.use("/api/rubrics", require("./routes/rubrics"));
 app.use("/api/analytics", require("./routes/analytics"));
 app.use("/api/logs", require("./routes/logs"));
+app.use("/api/auth", require("./routes/auth"));
 
 app.get("/", (req, res) => {
     res.send("AssignMate Pro API is running...");
