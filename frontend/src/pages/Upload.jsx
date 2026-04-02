@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UploadCloud, FileText, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import { evaluationService } from '../services/api';
+import logger from '../utils/logger';
 
 export default function Upload() {
   const [assignment, setAssignment] = useState(null);
@@ -16,7 +17,7 @@ export default function Upload() {
   useEffect(() => {
     evaluationService.getRubrics().then(res => {
       setRubrics(res.data);
-    }).catch(err => console.error("Error loading rubrics", err));
+    }).catch(err => logger.error("Error loading rubrics", err));
   }, []);
 
   const handleFileChange = (e) => {
@@ -68,7 +69,7 @@ export default function Upload() {
       const response = await evaluationService.evaluate(formData);
       navigate(`/results/${response.data._id}`, { state: { evaluation: response.data } });
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       setError(err.response?.data?.error || 'Error analyzing assignment. Please try again.');
     } finally {
       setLoading(false);

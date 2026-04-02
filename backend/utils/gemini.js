@@ -2,9 +2,11 @@ const { GoogleGenAI } = require("@google/genai");
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "dummy_key" });
 
+const logger = require("./logger");
+
 async function evaluateAssignmentWithRubric(assignmentText, rubricText, academicLevel = "University Undergraduate") {
   if (!process.env.GEMINI_API_KEY) {
-    console.warn("No GEMINI_API_KEY found. Returning mock evaluation.");
+    logger.warn("No GEMINI_API_KEY found. Returning mock evaluation.");
     return getMockEvaluation();
   }
 
@@ -38,7 +40,7 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText, academic
       - missingCriteria: criteria that are absent or severely underdeveloped.
       - suggestions: actionable improvements the student should make (min 3).
       - plagiarismRisk: "Low", "Medium", or "High" based on writing style, repetition, generic phrasing.
-      - rubricBreakdown: one entry per criterion with a supportingEvidence quote from the text.
+      - rubricBreakdown: one entry per criterion with a supporting evidence quote from the text.
 
       OUTPUT (strict JSON only, no markdown):
       {
@@ -73,7 +75,7 @@ async function evaluateAssignmentWithRubric(assignmentText, rubricText, academic
     const text = response.text.replace(/```json/gi, "").replace(/```/g, "").trim();
     return JSON.parse(text);
   } catch (error) {
-    console.error("Gemini 3 Evaluation error:", error);
+    logger.error("Gemini 3 Evaluation error:", error);
     throw error;
   }
 }
@@ -137,7 +139,7 @@ async function parseRubricText(rawText) {
     const text = response.text.trim();
     return JSON.parse(text);
   } catch (error) {
-    console.error("Gemini 3 Rubric Parsing error:", error);
+    logger.error("Gemini 3 Rubric Parsing error:", error);
     throw error;
   }
 }

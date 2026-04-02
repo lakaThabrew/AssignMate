@@ -2,13 +2,15 @@ const express = require("express");
 const Evaluation = require("../models/Evaluation");
 const router = express.Router();
 
+const logger = require("../utils/logger");
+
 // Get recent evaluations (history)
 router.get("/", async (req, res) => {
   try {
     const evaluations = await Evaluation.find().sort({ createdAt: -1 }).limit(10);
     res.json(evaluations);
   } catch (err) {
-    console.error("Error fetching history:", err);
+    logger.error("Error fetching history:", err);
     res.status(500).json({ error: "Failed to load history." });
   }
 });
@@ -20,7 +22,7 @@ router.get("/:id", async (req, res) => {
     if (!evaluation) return res.status(404).json({ error: "Not found" });
     res.json(evaluation);
   } catch (err) {
-    console.error("Error fetching single evaluation:", err);
+    logger.error("Error fetching single evaluation:", err);
     res.status(500).json({ error: "Failed to load evaluation." });
   }
 });

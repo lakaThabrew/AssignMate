@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import api from "../services/api";
 import generatePDF from "../utils/pdfExport";
+import logger from "../utils/logger";
 
 const Results = () => {
   const { id } = useParams();
@@ -28,7 +29,7 @@ const Results = () => {
         const res = await api.get(`/history/${id}`);
         setData(res.data);
       } catch (err) {
-        console.error("Error fetching results:", err);
+        logger.error("Error fetching results:", err);
       } finally {
         setLoading(false);
       }

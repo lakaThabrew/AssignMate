@@ -5,7 +5,7 @@ const fs = require("fs");
 const mammoth = require("mammoth");
 const { evaluateAssignmentWithRubric } = require("../utils/gemini");
 const Evaluation = require("../models/Evaluation");
-const router = express.Router();
+const logger = require("../utils/logger");
 
 const upload = multer({ dest: "uploads/" });
 
@@ -41,12 +41,12 @@ router.post("/", upload.single("assignment"), async (req, res) => {
     }
 
     // Evaluate
-    console.log("Evaluating document...", file.originalname, "Level:", academicLevel);
+    logger.info("Evaluating document...", file.originalname, "Level:", academicLevel);
     let evaluationData;
     try {
       evaluationData = await evaluateAssignmentWithRubric(assignmentText, rubricText, academicLevel);
     } catch (aiError) {
-      console.error("AI Evaluation failed:", aiError);
+      logger.error("AI Evaluation failed:", aiError);
       throw new Error("AI Engine failed to process this document. Please try again later.");
     }
     
@@ -64,7 +64,7 @@ router.post("/", upload.single("assignment"), async (req, res) => {
 
     res.json(savedEvaluation);
   } catch (error) {
-    console.error("Evaluation Route Error:", error);
+    logger.error("Evaluation Route Error:", error);
     // Cleanup on error
     if (filePath) {
       try { fs.unlinkSync(filePath); } catch(e){}

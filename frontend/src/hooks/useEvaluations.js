@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { evaluationService } from '../services/api';
+import logger from '../utils/logger';
 
 export default function useEvaluations() {
   const [history, setHistory] = useState([]);
@@ -13,7 +14,7 @@ export default function useEvaluations() {
       setHistory(res.data);
       setError(null);
     } catch (err) {
-      console.error("Error fetching history", err);
+      logger.error("Error fetching history", err);
       setError(err);
     } finally {
       setLoading(false);

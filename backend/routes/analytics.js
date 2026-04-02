@@ -1,6 +1,6 @@
 const express = require("express");
 const Evaluation = require("../models/Evaluation");
-const router = express.Router();
+const logger = require("../utils/logger");
 
 // Get aggregated analytics for lecturers
 router.get("/summary", async (req, res) => {
@@ -58,7 +58,7 @@ router.get("/summary", async (req, res) => {
       commonWeaknesses
     });
   } catch (err) {
-    console.error("Analytics error:", err);
+    logger.error("Analytics error:", err);
     res.status(500).json({ error: "Failed to generate analytics." });
   }
 });

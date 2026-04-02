@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Save, FileText, Sparkles, CheckCircle } from 'lucide-react';
 import { evaluationService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import logger from '../utils/logger';
 
 export default function RubricBuilder() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function RubricBuilder() {
       setSuccess(true);
       setTimeout(() => navigate('/results'), 2000);
     } catch (err) {
-      console.error('Error saving rubric', err);
+      logger.error('Error saving rubric', err);
       alert('Failed to save rubric');
     } finally {
       setLoading(false);
@@ -56,7 +57,7 @@ export default function RubricBuilder() {
       setCriteria(res.data);
       alert('AI generated structured criteria from your text!');
     } catch (err) {
-      console.error('AI Parsing error', err);
+      logger.error('AI Parsing error', err);
       alert('Failed to parse text with AI');
     } finally {
       setLoading(false);

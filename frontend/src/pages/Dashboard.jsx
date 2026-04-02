@@ -8,6 +8,7 @@ import StatsCard from '../components/StatsCard';
 import EvaluationCard from '../components/EvaluationCard';
 import { ScoreHistoryChart, DistributionChart } from '../components/Charts';
 import api from '../services/api';
+import logger from '../utils/logger';
 
 export default function Dashboard() {
   const { role, userInfo } = useRole();
@@ -19,7 +20,7 @@ export default function Dashboard() {
     if (role === 'lecturer') {
       api.get("/analytics/summary")
         .then(res => setAnalytics(res.data))
-        .catch(err => console.error("Analytics fetch fail:", err))
+        .catch(err => logger.error("Analytics fetch fail:", err))
         .finally(() => setLoadingAnalytics(false));
     }
   }, [role]);
