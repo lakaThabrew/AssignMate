@@ -5,7 +5,7 @@ const IS_DEV = import.meta.env.MODE === 'development';
 const sendToStore = async (level, message, meta = {}) => {
     try {
         await api.post('/logs', { level, message, meta });
-    } catch (e) {
+    } catch {
         // Silently fail to avoid console clutter if backend is down
     }
 };
