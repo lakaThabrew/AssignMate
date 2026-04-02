@@ -12,8 +12,11 @@ const upload = multer({ dest: "uploads/" });
 
 router.post("/", upload.single("assignment"), async (req, res) => {
   const filePath = req.file ? req.file.path : null;
-  
+
   try {
+    const requesterEmail = String(req.headers["x-user-email"] || "").trim().toLowerCase();
+    const requesterName = String(req.headers["x-user-name"] || "").trim();
+    const requesterRole = String(req.headers["x-user-role"] || "student").trim().toLowerCase();
     const { rubricText, academicLevel } = req.body;
     const file = req.file;
 
@@ -24,7 +27,7 @@ router.post("/", upload.single("assignment"), async (req, res) => {
 
     // Read the uploaded file
     const dataBuffer = fs.readFileSync(filePath);
-    
+
     // Parse PDF/DOCX text
     let assignmentText = "";
     if (file.originalname.toLowerCase().endsWith('.pdf')) {
@@ -50,17 +53,21 @@ router.post("/", upload.single("assignment"), async (req, res) => {
       logger.error("AI Evaluation failed:", aiError);
       throw new Error("AI Engine failed to process this document. Please try again later.");
     }
-    
+
     // Save to database
     const newDoc = new Evaluation({
       assignmentName: file.originalname,
+      userEmail: requesterEmail || null,
+      userName: requesterName,
+      userRole: requesterRole === "lecturer" ? "lecturer" : "student",
+      isGuest: !requesterEmail,
       ...evaluationData
     });
     const savedEvaluation = await newDoc.save();
 
     // Clean up file immediately after success
     if (filePath) {
-      fs.unlink(filePath, () => {}); // Async cleanup
+      fs.unlink(filePath, () => { }); // Async cleanup
     }
 
     res.json(savedEvaluation);
@@ -68,7 +75,7 @@ router.post("/", upload.single("assignment"), async (req, res) => {
     logger.error("Evaluation Route Error:", error);
     // Cleanup on error
     if (filePath) {
-      try { fs.unlinkSync(filePath); } catch(e){}
+      try { fs.unlinkSync(filePath); } catch (e) { }
     }
     res.status(500).json({ error: error.message || "Failed to evaluate assignment." });
   }

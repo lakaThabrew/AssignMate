@@ -11,6 +11,10 @@ const RubricBreakdownSchema = new mongoose.Schema({
 
 const EvaluationSchema = new mongoose.Schema({
   assignmentName: { type: String, required: true },
+  userEmail: { type: String, default: null, index: true },
+  userName: { type: String, default: "" },
+  userRole: { type: String, enum: ["student", "lecturer"], default: "student" },
+  isGuest: { type: Boolean, default: true },
   scorePredicted: { type: Number, required: true },
   strengths: [String],
   weaknesses: [String],
