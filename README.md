@@ -1,122 +1,89 @@
-# AssignMate Pro 🎓
+# AssignMate Pro
 
-> **Rubric-aware academic evaluation platform powered by Google Gemini AI**
-> Built for the University Hackathon — EdTech & Generative AI Category
+Rubric-aware academic evaluation platform powered by Google Gemini.
 
----
+## Overview
 
-## 🧩 Selected Domain
+AssignMate Pro helps students and lecturers evaluate assignment quality against explicit rubric criteria.
 
-**Education Technology (EdTech) & Generative AI**
+- Lecturers can create and manage rubrics, including AI-assisted rubric generation.
+- Students can upload PDF or DOCX assignments for AI-based criterion-by-criterion feedback.
+- The platform provides strengths, weaknesses, missing criteria, estimated scoring, and analytics views.
 
----
+## Core Features
 
-## 🚩 Problem Statement
+- Role-based user flow (student and lecturer)
+- Rubric management with AI-assisted parsing
+- Assignment upload and analysis (PDF, DOCX)
+- Evaluation history and dashboard analytics
+- Feedback panels for strengths, weaknesses, and missing criteria
+- Logging and basic auth flows (register, login, password reset token flow)
 
-Grading academic assignments is a time-consuming, manual process for educators. Students often lack detailed pre-submission feedback on how well their work aligns with the rubric criteria — leading to missed requirements and inefficient revision cycles.
+## Tech Stack
 
----
+- Frontend: React + Vite, Recharts, Three.js
+- Backend: Node.js + Express
+- Database: MongoDB + Mongoose
+- AI: Google Gemini (`@google/genai`)
+- Utilities: multer, mammoth, pdf-parse, winston
 
-## 💡 Proposed Solution
+## Project Structure
 
-**AssignMate Pro** is a rubric-aware academic evaluation system that bridges the gap between student effort and lecturer expectations.
-
-- **Lecturers** create structured grading rubrics (manually or via AI text parsing) and get class-wide analytics.
-- **Students** upload their assignments (PDF/DOCX) to receive instant AI-generated feedback — criterion-by-criterion — before final submission.
-- The system highlights **strengths**, **weaknesses**, **missing criteria**, predicts a **score**, and flags **plagiarism risk**.
-
----
-
-## 👥 Team Details
-
-| Role                             | Name                   |
-| -------------------------------- | ---------------------- |
-| Team Lead / Full Stack Developer | EchoBinary Team Member |
-| AI Researcher / Prompt Engineer  | EchoBinary Team Member |
-| UI/UX Designer / Frontend Dev    | EchoBinary Team Member |
-| Backend Architect / DB Engineer  | EchoBinary Team Member |
-
-- **Team Name**: EchoBinary
-- **University**: University of Moratuwa
-- **Domain**: Education Technology (EdTech) & Generative AI
-
----
-
-## 🛠 Technology Stack
-
-| Layer        | Technology                                        |
-| ------------ | ------------------------------------------------- |
-| Frontend     | React.js (Vite), Recharts, Three.js, Lucide Icons |
-| Backend      | Node.js, Express.js                               |
-| Database     | MongoDB (Mongoose ORM)                            |
-| AI Engine    | Google Gemini 1.5 Pro & Flash API                 |
-| File Parsing | `pdf-parse`, `mammoth` (DOCX)                     |
-| Dev Tooling  | Concurrently, dotenv, multer                      |
-
-### Architecture
-
-```
-┌────────────────────────────────────────────┐
-│               React Frontend               │
-│  (Vite · Recharts · Three.js · Context)    │
-└───────────────────┬────────────────────────┘
-                    │ REST API
-┌───────────────────▼────────────────────────┐
-│           Node.js / Express Backend         │
-│  /api/evaluate  /api/history  /api/rubrics  │
-└──────────┬──────────────────┬──────────────┘
-           │                  │
-    ┌──────▼──────┐   ┌───────▼───────┐
-    │   MongoDB   │   │  Gemini AI    │
-    │  (Mongoose) │   │  (LLM Layer)  │
-    └─────────────┘   └───────────────┘
+```text
+AssignMate/
+|-- frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- context/
+|   |   |-- hooks/
+|   |   |-- pages/
+|   |   |-- services/
+|   |   `-- utils/
+|   `-- package.json
+|-- backend/
+|   |-- models/
+|   |-- routes/
+|   |-- utils/
+|   |-- server.js
+|   |-- seed.js
+|   |-- .env.example
+|   `-- package.json
+`-- package.json
 ```
 
----
+## Prerequisites
 
-## ✨ Key Features
+- Node.js 18+
+- npm
+- MongoDB (local instance or MongoDB Atlas)
+- Gemini API key: https://aistudio.google.com/app/apikey
 
-- 🔐 **Role-Based Authentication** — Student & Lecturer portals with account creation
-- 📋 **AI Rubric Builder** — Generate structured criteria from raw text using Gemini
-- 📄 **Document Upload** — Supports PDF and DOCX assignment files
-- 🤖 **Deep AI Analysis** — Per-criterion evaluation with evidence quotes and coverage %
-- 📊 **Rich Visualizations** — Radial score gauge, criteria bar chart, score history trend
-- 💬 **Tabbed Feedback** — Strengths, Weaknesses, Missing Parts, and Suggestions
-- 🛡 **Plagiarism Risk** — AI-powered originality detection flag
-- 🧠 **Personalized Dashboard** — Role-specific stats and recent evaluation history
+## Setup
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (v18+)
-- MongoDB (local or Atlas)
-- Google Gemini API Key — [Get one here](https://aistudio.google.com/app/apikey)
-
-### Quick Start (Recommended)
+1. Install dependencies at all levels.
 
 ```bash
-# 1. Clone the repo and install root dependencies
 npm install
-
-# 2. Set up backend environment
-cp backend/.env.example backend/.env
-# Edit backend/.env and add your GEMINI_API_KEY and MONGO_URI
-
-# 3. Install all dependencies
 cd backend && npm install
-cd ../frontend && npm install && cd ..
-
-# 4. Run both servers simultaneously
-npm run dev
+cd ../frontend && npm install
+cd ..
 ```
 
-> The frontend will be available at `http://localhost:5173`
-> The backend API runs at `http://localhost:5000`
+2. Create backend environment file.
 
-### Backend `.env` Variables
+macOS/Linux:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+3. Update `backend/.env` values:
 
 ```env
 PORT=5000
@@ -124,35 +91,54 @@ MONGO_URI=mongodb://127.0.0.1:27017/assignmate
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
----
+## Run
 
-## 📁 Project Structure
+Run frontend and backend together from the project root:
 
-```
-AssignMate/
-├── frontend/
-│   └── src/
-│       ├── components/     # Navbar, Footer, Charts, FeedbackPanel, Hero
-│       ├── context/        # RoleContext (global auth + role state)
-│       ├── hooks/          # useEvaluations (custom data hook)
-│       ├── pages/          # Dashboard, Upload, Results, History, About, Contact
-│       └── services/       # api.js (centralized Axios service layer)
-├── backend/
-│   ├── models/             # Evaluation.js, Rubric.js (Mongoose schemas)
-│   ├── routes/             # evaluate.js, history.js, rubrics.js, analytics.js, auth.js
-│   └── utils/              # gemini.js (AI evaluation + rubric parsing)
-│   └── .env.example        # Backend environment template
-└── package.json            # Concurrently dev script
+```bash
+npm run dev
 ```
 
----
+Default local URLs:
 
-## 📸 App Screenshots
+- Frontend: http://localhost:5173
+- Backend: http://localhost:5000
 
-> _Add screenshots of the Login page, Dashboard, and Results page here_
+## Available Scripts
 
----
+Root (`package.json`):
 
-## 📜 License
+- `npm run dev` - run frontend and backend concurrently
+- `npm run frontend` - run frontend dev server
+- `npm run backend` - run backend server
 
-MIT — Built for educational and hackathon purposes.
+Frontend (`frontend/package.json`):
+
+- `npm run dev`
+- `npm run build`
+- `npm run lint`
+- `npm run preview`
+
+Backend (`backend/package.json`):
+
+- `npm start`
+- `npm run dev`
+- `npm run seed`
+
+## API Base Routes
+
+- `/api/auth`
+- `/api/evaluate`
+- `/api/history`
+- `/api/rubrics`
+- `/api/analytics`
+- `/api/logs`
+
+## Notes
+
+- Frontend build may warn about large chunk sizes; this is a performance warning, not a build failure.
+- The frontend has its own Vite template README in `frontend/README.md`; this file is the main project README.
+
+## License
+
+MIT
