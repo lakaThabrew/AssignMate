@@ -1,5 +1,18 @@
 # AssignMate Pro
 
+## Team Details
+
+- Team Name: EchoBinary
+- University: University of Moratuwa
+- Selected Domain: Education Technology (EdTech) and Generative AI
+
+Team roles:
+
+- Team Lead and Full Stack Developer: EchoBinary Team Member
+- AI Researcher and Prompt Engineer: EchoBinary Team Member
+- UI and UX Designer and Frontend Developer: EchoBinary Team Member
+- Backend Architect and Database Engineer: EchoBinary Team Member
+
 Rubric-aware academic evaluation platform powered by Google Gemini AI.
 
 ## 1. Document Purpose
