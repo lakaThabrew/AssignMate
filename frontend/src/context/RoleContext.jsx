@@ -1,17 +1,23 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { useState } from "react";
+import { RoleContext } from "./RoleStore";
 
-const RoleContext = createContext();
-
-export const RoleProvider = ({ children }) => {
-  const [role, setRole] = useState('student');
+export default function RoleProvider({ children }) {
+  const [role, setRole] = useState("student");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState({ name: '', email: '' });
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
 
   return (
-    <RoleContext.Provider value={{ role, setRole, isLoggedIn, setIsLoggedIn, userInfo, setUserInfo }}>
+    <RoleContext.Provider
+      value={{
+        role,
+        setRole,
+        isLoggedIn,
+        setIsLoggedIn,
+        userInfo,
+        setUserInfo,
+      }}
+    >
       {children}
     </RoleContext.Provider>
   );
-};
-
-export const useRole = () => useContext(RoleContext);
+}
