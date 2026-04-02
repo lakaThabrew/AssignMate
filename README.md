@@ -6,16 +6,19 @@
 ---
 
 ## 🧩 Selected Domain
+
 **Education Technology (EdTech) & Generative AI**
 
 ---
 
 ## 🚩 Problem Statement
+
 Grading academic assignments is a time-consuming, manual process for educators. Students often lack detailed pre-submission feedback on how well their work aligns with the rubric criteria — leading to missed requirements and inefficient revision cycles.
 
 ---
 
 ## 💡 Proposed Solution
+
 **AssignMate Pro** is a rubric-aware academic evaluation system that bridges the gap between student effort and lecturer expectations.
 
 - **Lecturers** create structured grading rubrics (manually or via AI text parsing) and get class-wide analytics.
@@ -26,14 +29,14 @@ Grading academic assignments is a time-consuming, manual process for educators. 
 
 ## 👥 Team Details
 
-| Role | Name |
-|------|------|
-| Team Lead / Full Stack Developer | Member 1 |
-| AI Researcher / Prompt Engineer | Member 2 |
-| UI/UX Designer / Frontend Dev | Member 3 |
-| Backend Architect / DB Engineer | Member 4 |
+| Role                             | Name                   |
+| -------------------------------- | ---------------------- |
+| Team Lead / Full Stack Developer | EchoBinary Team Member |
+| AI Researcher / Prompt Engineer  | EchoBinary Team Member |
+| UI/UX Designer / Frontend Dev    | EchoBinary Team Member |
+| Backend Architect / DB Engineer  | EchoBinary Team Member |
 
-- **Team Name**: EchoBinary 
+- **Team Name**: EchoBinary
 - **University**: University of Moratuwa
 - **Domain**: Education Technology (EdTech) & Generative AI
 
@@ -41,16 +44,17 @@ Grading academic assignments is a time-consuming, manual process for educators. 
 
 ## 🛠 Technology Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React.js (Vite), Recharts, Three.js, Lucide Icons |
-| Backend | Node.js, Express.js |
-| Database | MongoDB (Mongoose ORM) |
-| AI Engine | Google Gemini 1.5 Pro & Flash API |
-| File Parsing | `pdf-parse`, `mammoth` (DOCX) |
-| Dev Tooling | Concurrently, dotenv, multer |
+| Layer        | Technology                                        |
+| ------------ | ------------------------------------------------- |
+| Frontend     | React.js (Vite), Recharts, Three.js, Lucide Icons |
+| Backend      | Node.js, Express.js                               |
+| Database     | MongoDB (Mongoose ORM)                            |
+| AI Engine    | Google Gemini 1.5 Pro & Flash API                 |
+| File Parsing | `pdf-parse`, `mammoth` (DOCX)                     |
+| Dev Tooling  | Concurrently, dotenv, multer                      |
 
 ### Architecture
+
 ```
 ┌────────────────────────────────────────────┐
 │               React Frontend               │
@@ -86,11 +90,13 @@ Grading academic assignments is a time-consuming, manual process for educators. 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (v18+)
 - MongoDB (local or Atlas)
 - Google Gemini API Key — [Get one here](https://aistudio.google.com/app/apikey)
 
 ### Quick Start (Recommended)
+
 ```bash
 # 1. Clone the repo and install root dependencies
 npm install
@@ -106,13 +112,15 @@ cd ../frontend && npm install && cd ..
 # 4. Run both servers simultaneously
 npm run dev
 ```
+
 > The frontend will be available at `http://localhost:5173`
 > The backend API runs at `http://localhost:5000`
 
 ### Backend `.env` Variables
+
 ```env
 PORT=5000
-MONGO_URI=mongodb://127.0.0.1:27017/assign_mate_pro
+MONGO_URI=mongodb://127.0.0.1:27017/assignmate
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
@@ -131,8 +139,9 @@ AssignMate/
 │       └── services/       # api.js (centralized Axios service layer)
 ├── backend/
 │   ├── models/             # Evaluation.js, Rubric.js (Mongoose schemas)
-│   ├── routes/             # evaluate.js, history.js, rubrics.js
+│   ├── routes/             # evaluate.js, history.js, rubrics.js, analytics.js, auth.js
 │   └── utils/              # gemini.js (AI evaluation + rubric parsing)
+│   └── .env.example        # Backend environment template
 └── package.json            # Concurrently dev script
 ```
 
@@ -145,4 +154,5 @@ AssignMate/
 ---
 
 ## 📜 License
+
 MIT — Built for educational and hackathon purposes.
